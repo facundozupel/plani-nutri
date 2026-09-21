@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arma tu comida — Plan Facundo</title>
+<style>
+  :root {
+    --paper: #f3efe6;
+    --paper-deep: #e8e0d2;
+    --card: #fffdf8;
+    --ink: #17241b;
+    --muted: #6f756c;
+    --line: #d8d1c3;
+    --forest: #204f36;
+    --forest-deep: #153927;
+    --sage: #dce7dc;
+    --tomato: #d4573d;
+    --tomato-soft: #f7e4de;
+    --mustard: #b77927;
+    --mustard-soft: #f5ead6;
+    --white: #fffdf8;
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: "Avenir Next", Avenir, "Century Gothic", sans-serif;
+    line-height: 1.5;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(rgba(32, 79, 54, .035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(32, 79, 54, .035) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  button, select { font: inherit; }
+  button { -webkit-tap-highlight-color: transparent; }
+
+  .wrap {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 28px 0 72px;
+  }
+
+  header.top {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(26px, 5vw, 58px);
+    color: var(--white);
+    background: var(--forest-deep);
+    border-radius: 28px;
+  }
+
+  header.top::after {
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    right: -84px;
+    bottom: -108px;
+    border: 34px solid rgba(255, 253, 248, .08);
+    border-radius: 50%;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    color: #c8d7cc;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 26px;
+    height: 2px;
+    background: var(--tomato);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 40px;
+    align-items: end;
+  }
+
+  h1, h2, .meal-title {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    letter-spacing: -.035em;
+  }
+
+  h1 {
+    max-width: 690px;
+    font-size: clamp(40px, 7vw, 74px);
+    font-weight: 500;
+    line-height: .97;
+  }
+
+  .sub {
+    max-width: 680px;
+    margin-top: 20px;
+    color: #d7e0d9;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .day-progress {
+    position: relative;
+    z-index: 1;
+    padding-left: 20px;
+    border-left: 1px solid rgba(255, 255, 255, .18);
+  }
+
+  .day-progress strong {
+    display: block;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .day-progress span {
+    display: block;
+    margin-top: 7px;
+    color: #bdcbbf;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 18px;
+  }
+
+  .chip {
+    padding: 5px 11px;
+    color: #dce6df;
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(255, 255, 255, .13);
+    border-radius: 999px;
+    font-size: 11.5px;
+  }
+
+  .chip b { color: var(--white); font-weight: 700; }
+
+  .chip.total {
+    color: var(--forest-deep);
+    background: var(--sage);
+    border-color: #c8d7c9;
+  }
+
+  .chip.total b { color: var(--forest-deep); }
+
+  .daily-total {
+    margin-top: 12px;
+    color: #bfcfc3;
+    font-size: 11.5px;
+  }
+
+  .meal-route { margin: 36px 0 24px; }
+
+  .route-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 12px;
+  }
+
+  .route-heading h2 {
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .route-heading p {
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .tab {
+    position: relative;
+    min-height: 96px;
+    padding: 14px;
+    color: var(--ink);
+    text-align: left;
+    background: rgba(255, 253, 248, .75);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
+  }
+
+  .tab:hover { transform: translateY(-2px); border-color: #aeb8ac; }
+
+  .tab-index {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--tomato);
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 17px;
+  }
+
+  .tab-name { display: block; font-size: 14px; font-weight: 700; }
+
+  .tab small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .tab-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    min-width: 30px;
+    padding: 2px 7px;
+    color: var(--muted);
+    text-align: center;
+    background: var(--paper);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .tab.active {
+    color: var(--white);
+    background: var(--forest);
+    border-color: var(--forest);
+  }
+
+  .tab.active .tab-index { color: #ef9b86; }
+  .tab.active small { color: #c4d3c8; }
+  .tab.active .tab-status { color: var(--forest); background: var(--white); }
+  .tab.complete:not(.active) .tab-status { color: var(--forest); background: var(--sage); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 22px;
+    align-items: start;
+  }
+
+  .meal-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+    padding: 8px 2px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .meal-kicker {
+    color: var(--tomato);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .meal-title {
+    margin-top: 2px;
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.05;
+  }
+
+  .meal-head .time {
+    color: var(--muted);
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 17px;
+    font-style: italic;
+  }
+
+  .formula-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 16px;
+  }
+
+  .group {
+    display: grid;
+    grid-template-columns: minmax(150px, .72fr) minmax(0, 1.5fr);
+    column-gap: 24px;
+    row-gap: 8px;
+    padding: 22px;
+    margin-bottom: 10px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: border-color .18s ease, transform .18s ease;
+  }
+
+  .group:focus-within {
+    border-color: #8ba18e;
+    transform: translateY(-1px);
+  }
+
+  .group h3 {
+    grid-row: 1 / span 4;
+    align-self: start;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  .pbadge {
+    display: block;
+    width: fit-content;
+    margin-top: 9px;
+    padding: 3px 9px;
+    color: var(--forest);
+    background: var(--sage);
+    border-radius: 999px;
+    font-family: "Avenir Next", sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .03em;
+  }
+
+  .ghint {
+    grid-column: 2;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .sellabel {
+    grid-column: 2;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  select {
+    grid-column: 2;
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 42px 10px 13px;
+    color: var(--ink);
+    background-color: var(--white);
+    border: 1px solid #cfc8bb;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  select:focus {
+    outline: 3px solid rgba(32, 79, 54, .15);
+    border-color: var(--forest);
+  }
+
+  .qty {
+    grid-column: 2;
+    min-height: 47px;
+    padding-left: 13px;
+    color: var(--forest);
+    border-left: 3px solid var(--tomato);
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+    animation: amountIn .2s ease both;
+  }
+
+  .qty .none {
+    color: #aaa397;
+    font-family: "Avenir Next", sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  .qtysub {
+    margin-top: 4px;
+    color: var(--muted);
+    font-family: "Avenir Next", sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  @keyframes amountIn {
+    from { opacity: .25; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .free, .note {
+    position: relative;
+    padding: 14px 16px 14px 46px;
+    margin-bottom: 10px;
+    border-radius: 13px;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  .free { color: var(--forest-deep); background: var(--sage); border: 1px solid #c7d8c9; }
+  .note { color: #6c4b20; background: var(--mustard-soft); border: 1px solid #e2cfad; }
+
+  .free::before, .note::before {
+    position: absolute;
+    left: 16px;
+    top: 13px;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .free::before { content: "+"; color: var(--forest); }
+  .note::before { content: "i"; color: var(--mustard); font-style: italic; }
+
+  aside.plate {
+    position: sticky;
+    top: 16px;
+    overflow: hidden;
+    background: var(--card);
+    border: 1px solid #cbc3b4;
+    border-radius: 4px 4px 18px 18px;
+  }
+
+  aside.plate::before {
+    content: "";
+    display: block;
+    height: 9px;
+    background: repeating-linear-gradient(90deg, var(--paper-deep) 0 9px, transparent 9px 18px);
+  }
+
+  .receipt-inner { padding: 22px; }
+
+  .receipt-kicker {
+    color: var(--tomato);
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  aside.plate h2 {
+    margin-top: 4px;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 26px;
+    font-weight: 500;
+  }
+
+  aside.plate .pm {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 11.5px;
+  }
+
+  .receipt-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0 7px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 5px;
+    overflow: hidden;
+    background: var(--paper-deep);
+    border-radius: 99px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--forest);
+    border-radius: inherit;
+    transition: width .25s ease;
+  }
+
+  .progress-label { color: var(--muted); font-size: 10px; font-weight: 700; }
+
+  .plate ul { margin-top: 10px; list-style: none; }
+
+  .plate li {
+    padding: 11px 0;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 15px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .plate li:last-child { border-bottom: none; }
+
+  .plate li b {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--muted);
+    font-family: "Avenir Next", sans-serif;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .plate li strong { color: var(--forest); font-weight: 600; }
+  .plate .empty { padding: 18px 0 8px; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+
+  .complete-message {
+    margin-top: 12px;
+    padding: 9px 11px;
+    color: var(--forest);
+    background: var(--sage);
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+
+  .btnrow { display: flex; gap: 8px; margin-top: 16px; }
+
+  button.act {
+    flex: 1;
+    min-height: 39px;
+    padding: 8px 10px;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    font-size: 11.5px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: transform .16s ease, background-color .16s ease;
+  }
+
+  button.act.primary { color: var(--white); background: var(--forest); border-color: var(--forest); }
+  button.act:hover { transform: translateY(-1px); }
+
+  section.ref { margin-top: 58px; }
+
+  .ref-heading {
+    display: grid;
+    grid-template-columns: .75fr 1.25fr;
+    gap: 30px;
+    align-items: end;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  section.ref h2 { font-size: 32px; font-weight: 500; }
+  .ref-heading p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+  .refgrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 4px;
+  }
+
+  .refcard {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    padding: 20px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .refcard:nth-child(odd) { border-right: 1px solid var(--line); }
+
+  .refnum {
+    color: var(--tomato);
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 15px;
+  }
+
+  .refcard h4 { font-family: "Iowan Old Style", Georgia, serif; font-size: 16px; font-weight: 600; }
+  .refcard p { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+
+  details.audit {
+    margin-top: 28px;
+    background: rgba(255, 253, 248, .72);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  details.audit summary {
+    padding: 16px 18px;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .audit-body { padding: 0 18px 18px; color: var(--muted); font-size: 12.5px; }
+  .audit-body p + p { margin-top: 9px; }
+  .audit-body strong { color: var(--ink); }
+
+  footer {
+    max-width: 760px;
+    margin: 34px auto 0;
+    color: var(--muted);
+    text-align: center;
+    font-size: 10.5px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    aside.plate { position: static; }
+    .tabs { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 680px) {
+    .wrap { width: min(100% - 20px, 1180px); padding-top: 10px; }
+    header.top { padding: 26px 20px 30px; border-radius: 20px; }
+    .hero-grid { grid-template-columns: 1fr; gap: 24px; }
+    .day-progress { padding: 0; border-left: 0; }
+    .day-progress strong { font-size: 32px; }
+    .route-heading { display: block; }
+    .route-heading p { margin-top: 3px; }
+    .tabs { display: flex; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; }
+    .tab { flex: 0 0 168px; scroll-snap-align: start; }
+    .meal-head { display: block; }
+    .meal-head .time { display: block; margin-top: 7px; }
+    .group { display: block; padding: 18px 16px; }
+    .group h3 { margin-bottom: 13px; }
+    .ghint, .sellabel { margin-top: 10px; }
+    select { margin-top: 7px; }
+    .qty { margin-top: 11px; }
+    .ref-heading { display: block; }
+    .ref-heading p { margin-top: 8px; }
+    .refgrid { grid-template-columns: 1fr; }
+    .refcard:nth-child(odd) { border-right: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .wrap { width: 100%; padding: 0; }
+    header.top { color: var(--ink); background: #fff; border: 1px solid var(--line); }
+    .sub, .daily-total, .chip, .day-progress span { color: var(--ink); }
+    .tabs, .btnrow, section.ref, details.audit, footer { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    aside.plate { position: static; page-break-inside: avoid; }
+  }
+
+  /* Minimal product interface */
+  :root {
+    --countertop: #f6f6f3;
+    --plate: #ffffff;
+    --ink: #171a18;
+    --ink-secondary: #535a55;
+    --ink-muted: #8a918c;
+    --rule: rgba(23, 26, 24, .10);
+    --rule-strong: rgba(23, 26, 24, .18);
+    --herb: #285c43;
+    --herb-soft: #edf3ef;
+    --measure: #f1f3f1;
+    --control: #f5f6f4;
+    --paper: var(--countertop);
+    --paper-deep: #e8ebe8;
+    --card: var(--plate);
+    --muted: var(--ink-secondary);
+    --line: var(--rule);
+    --forest: var(--herb);
+    --forest-deep: #214c38;
+    --sage: var(--herb-soft);
+    --tomato: var(--herb);
+    --mustard: var(--ink-secondary);
+    --mustard-soft: var(--measure);
+    --white: #ffffff;
+    --radius: 12px;
+  }
+
+  html {
+    background: var(--countertop);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    color: var(--ink);
+    font-family: "Avenir Next", Avenir, "Century Gothic", sans-serif;
+    background: var(--countertop);
+    background-image: none;
+  }
+
+  h1, h2, .meal-title,
+  .group h3, aside.plate h2,
+  .plate li, .refcard h4,
+  details.audit summary {
+    font-family: "Avenir Next", Avenir, "Century Gothic", sans-serif;
+    letter-spacing: -.02em;
+  }
+
+  .wrap {
+    width: min(1080px, calc(100% - 40px));
+    padding: 40px 0 64px;
+  }
+
+  header.top {
+    overflow: visible;
+    padding: 0 0 28px;
+    color: var(--ink);
+    background: transparent;
+    border-bottom: 1px solid var(--rule);
+    border-radius: 0;
+  }
+
+  header.top::after,
+  .eyebrow::before,
+  aside.plate::before {
+    display: none;
+  }
+
+  .eyebrow {
+    margin-bottom: 12px;
+    color: var(--ink-muted);
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: .12em;
+  }
+
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr) 152px;
+    gap: 48px;
+    align-items: end;
+  }
+
+  h1 {
+    max-width: none;
+    font-size: 36px;
+    font-weight: 650;
+    line-height: 1.12;
+    letter-spacing: -.035em;
+    text-wrap: balance;
+  }
+
+  .sub {
+    max-width: 660px;
+    margin-top: 8px;
+    color: var(--ink-secondary);
+    font-size: 14px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .day-progress {
+    padding-left: 20px;
+    border-left: 1px solid var(--rule-strong);
+  }
+
+  .day-progress strong {
+    color: var(--ink);
+    font-family: "Avenir Next", Avenir, sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.04em;
+  }
+
+  .day-progress span {
+    margin-top: 4px;
+    color: var(--ink-muted);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  header .chips {
+    gap: 0;
+    margin-top: 20px;
+  }
+
+  header .chip {
+    padding: 0 12px;
+    color: var(--ink-secondary);
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--rule-strong);
+    border-radius: 0;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  header .chip:first-child { padding-left: 0; }
+  header .chip:last-child { border-right: 0; }
+  header .chip b { color: var(--ink); font-weight: 650; }
+
+  .daily-total {
+    margin-top: 14px;
+    color: var(--ink-muted);
+    font-size: 11px;
+  }
+
+  .meal-route { margin: 28px 0 24px; }
+
+  .route-heading {
+    margin-bottom: 8px;
+  }
+
+  .route-heading h2 {
+    font-size: 16px;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+
+  .route-heading p {
+    color: var(--ink-muted);
+    font-size: 11px;
+  }
+
+  .tabs {
+    gap: 0;
+    border-bottom: 1px solid var(--rule);
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    min-height: 72px;
+    padding: 12px 8px 13px;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    transition:
+      color 140ms cubic-bezier(.23, 1, .32, 1),
+      background-color 140ms cubic-bezier(.23, 1, .32, 1),
+      border-color 140ms cubic-bezier(.23, 1, .32, 1);
+  }
+
+  .tab:hover {
+    transform: none;
+    background: rgba(23, 26, 24, .025);
+  }
+
+  .tab:focus-visible {
+    outline: 2px solid rgba(40, 92, 67, .32);
+    outline-offset: -2px;
+  }
+
+  .tab:active { transform: scale(.98); }
+
+  .tab-index {
+    display: none;
+  }
+
+  .tab-name {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .tab small {
+    margin-top: 3px;
+    color: var(--ink-muted);
+    font-size: 10px;
+  }
+
+  .tab-status {
+    top: 12px;
+    right: 8px;
+    min-width: auto;
+    padding: 0;
+    color: var(--ink-muted);
+    background: transparent;
+    border-radius: 0;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tab.active {
+    color: var(--ink);
+    background: transparent;
+    border-color: var(--herb);
+  }
+
+  .tab.active .tab-name { color: var(--herb); }
+  .tab.active small { color: var(--ink-muted); }
+  .tab.active .tab-status {
+    color: var(--herb);
+    background: transparent;
+  }
+
+  .tab.complete:not(.active) .tab-status {
+    color: var(--herb);
+    background: transparent;
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 312px;
+    gap: 20px;
+  }
+
+  #panel {
+    overflow: hidden;
+    padding: 0 24px;
+    background: var(--plate);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+  }
+
+  .meal-head {
+    margin: 0;
+    padding: 24px 0 16px;
+    border-bottom: 0;
+  }
+
+  .meal-kicker {
+    color: var(--ink-muted);
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: .1em;
+  }
+
+  .meal-title {
+    margin-top: 4px;
+    font-size: 24px;
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: -.025em;
+  }
+
+  .meal-head .time {
+    color: var(--ink-secondary);
+    font-family: "Avenir Next", Avenir, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .formula-chips {
+    gap: 6px;
+    margin: 0 0 8px;
+  }
+
+  .formula-chips .chip.total {
+    padding: 4px 7px;
+    color: var(--ink-secondary);
+    background: var(--measure);
+    border: 0;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .group {
+    grid-template-columns: minmax(145px, .65fr) minmax(0, 1.5fr);
+    column-gap: 24px;
+    row-gap: 8px;
+    padding: 20px 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--rule);
+    border-radius: 0;
+    transition: none;
+  }
+
+  .group:focus-within {
+    border-color: var(--rule);
+    transform: none;
+  }
+
+  .group h3 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -.01em;
+  }
+
+  .pbadge {
+    margin-top: 5px;
+    padding: 0;
+    color: var(--ink-muted);
+    background: transparent;
+    border-radius: 0;
+    font-family: "Avenir Next", Avenir, sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .ghint {
+    color: var(--ink-muted);
+    font-size: 11px;
+  }
+
+  .sellabel {
+    margin-top: 6px;
+    color: var(--ink-muted);
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: .08em;
+  }
+
+  select {
+    min-height: 44px;
+    padding: 9px 40px 9px 12px;
+    color: var(--ink);
+    background: var(--control);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 13px;
+    transition:
+      background-color 140ms cubic-bezier(.23, 1, .32, 1),
+      border-color 140ms cubic-bezier(.23, 1, .32, 1);
+  }
+
+  select:hover { background: #eef0ed; }
+
+  select:focus {
+    outline: 3px solid rgba(40, 92, 67, .12);
+    border-color: rgba(40, 92, 67, .5);
+  }
+
+  .qty {
+    min-height: 42px;
+    padding: 10px 12px;
+    color: var(--ink);
+    background: var(--measure);
+    border: 0;
+    border-radius: 8px;
+    font-family: "Avenir Next", Avenir, sans-serif;
+    font-size: 20px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    animation: none;
+  }
+
+  .qty .none {
+    color: var(--ink-muted);
+    font-family: "Avenir Next", Avenir, sans-serif;
+    font-size: 11px;
+    font-weight: 450;
+  }
+
+  .qtysub {
+    margin-top: 3px;
+    color: var(--ink-secondary);
+    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .free, .note {
+    padding: 16px 0 16px 20px;
+    margin: 0;
+    color: var(--ink-secondary);
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--rule);
+    border-radius: 0;
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .free::before, .note::before {
+    left: 0;
+    top: 17px;
+    width: 6px;
+    height: 6px;
+    color: transparent;
+    background: var(--herb);
+    border-radius: 50%;
+    font-size: 0;
+  }
+
+  .note::before { background: var(--ink-muted); }
+
+  aside.plate {
+    top: 20px;
+    overflow: hidden;
+    background: var(--plate);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+  }
+
+  .receipt-inner { padding: 20px; }
+
+  .receipt-kicker {
+    color: var(--ink-muted);
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: .1em;
+  }
+
+  aside.plate h2 {
+    margin-top: 4px;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -.02em;
+  }
+
+  aside.plate .pm {
+    color: var(--ink-muted);
+    font-size: 10px;
+  }
+
+  .receipt-progress { margin: 16px 0 4px; }
+
+  .progress-track {
+    height: 3px;
+    background: var(--measure);
+  }
+
+  .progress-fill {
+    background: var(--herb);
+    transition: width 180ms cubic-bezier(.23, 1, .32, 1);
+  }
+
+  .progress-label {
+    color: var(--ink-muted);
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .plate ul { margin-top: 8px; }
+
+  .plate li {
+    padding: 12px 0;
+    font-family: "Avenir Next", Avenir, sans-serif;
+    font-size: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .plate li b {
+    margin-bottom: 3px;
+    color: var(--ink-muted);
+    font-family: "Avenir Next", Avenir, sans-serif;
+    font-size: 9px;
+    font-weight: 650;
+    letter-spacing: .06em;
+  }
+
+  .plate li strong {
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .plate .empty {
+    padding: 20px 0 10px;
+    color: var(--ink-muted);
+    font-size: 11px;
+  }
+
+  .complete-message {
+    padding: 9px 10px;
+    color: var(--herb);
+    background: var(--herb-soft);
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .btnrow { margin-top: 16px; }
+
+  button.act {
+    min-height: 40px;
+    padding: 8px 10px;
+    color: var(--ink-secondary);
+    background: transparent;
+    border: 1px solid var(--rule-strong);
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    transition:
+      transform 120ms cubic-bezier(.23, 1, .32, 1),
+      background-color 120ms cubic-bezier(.23, 1, .32, 1),
+      border-color 120ms cubic-bezier(.23, 1, .32, 1);
+  }
+
+  button.act.primary {
+    color: #fff;
+    background: var(--herb);
+    border-color: var(--herb);
+  }
+
+  button.act:hover {
+    transform: none;
+    background: var(--measure);
+  }
+
+  button.act.primary:hover { background: #214c38; }
+  button.act:active { transform: scale(.97); }
+
+  button.act:focus-visible {
+    outline: 3px solid rgba(40, 92, 67, .18);
+    outline-offset: 2px;
+  }
+
+  section.ref { margin-top: 48px; }
+
+  .ref-heading {
+    grid-template-columns: .7fr 1.3fr;
+    gap: 32px;
+    padding-bottom: 16px;
+    border-color: var(--rule);
+  }
+
+  section.ref h2 {
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -.02em;
+  }
+
+  .ref-heading p {
+    color: var(--ink-secondary);
+    font-size: 12px;
+  }
+
+  .refgrid { margin-top: 0; }
+
+  .refcard {
+    grid-template-columns: 24px 1fr;
+    gap: 8px;
+    padding: 18px 8px;
+    border-color: var(--rule);
+  }
+
+  .refcard:nth-child(odd) { border-color: var(--rule); }
+
+  .refnum {
+    color: var(--ink-muted);
+    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .refcard h4 {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .refcard p {
+    margin-top: 4px;
+    color: var(--ink-secondary);
+    font-size: 11px;
+  }
+
+  details.audit {
+    margin-top: 24px;
+    background: transparent;
+    border-color: var(--rule);
+    border-radius: 10px;
+  }
+
+  details.audit summary {
+    min-height: 44px;
+    padding: 13px 16px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .audit-body {
+    padding: 0 16px 16px;
+    color: var(--ink-secondary);
+    font-size: 11px;
+  }
+
+  footer {
+    margin-top: 28px;
+    color: var(--ink-muted);
+    font-size: 10px;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    aside.plate { position: static; }
+  }
+
+  @media (max-width: 680px) {
+    .wrap {
+      width: min(100% - 24px, 1080px);
+      padding: 24px 0 48px;
+    }
+
+    header.top {
+      padding: 0 0 22px;
+      border-radius: 0;
+    }
+
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    h1 { font-size: 30px; }
+
+    .day-progress {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 0;
+      border-left: 0;
+    }
+
+    .day-progress strong { font-size: 22px; }
+    .day-progress span { margin-top: 0; }
+
+    header .chips {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 12px;
+    }
+
+    header .chip {
+      padding: 0;
+      border-right: 0;
+    }
+
+    .daily-total { line-height: 1.5; }
+    .route-heading p { margin-top: 2px; }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+    }
+
+    .tab {
+      flex: 0 0 148px;
+      min-height: 68px;
+      padding: 11px 8px 12px;
+    }
+
+    #panel { padding: 0 16px; }
+    .meal-head { padding: 20px 0 14px; }
+    .meal-head .time { margin-top: 5px; }
+    .meal-title { font-size: 22px; }
+
+    .group {
+      display: block;
+      padding: 18px 0;
+    }
+
+    .group h3 { margin-bottom: 12px; }
+    .ghint, .sellabel { margin-top: 8px; }
+    select { margin-top: 6px; }
+    .qty { margin-top: 8px; }
+
+    .ref-heading { display: block; }
+    .ref-heading p { margin-top: 7px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">Plan diario · cálculo exacto</div>
+    <div class="hero-grid">
+      <div>
+        <h1>Arma tu comida</h1>
+        <p class="sub">Elige un alimento por grupo. Calculamos las porciones asignadas por la equivalencia exacta de cada alimento. Ejemplo: 4 porciones de pescado × 80 g = 320 g.</p>
+        <div class="chips">
+          <span class="chip"><b>1.705</b> kcal/día</span>
+          <span class="chip"><b>136 g</b> proteína</span>
+          <span class="chip"><b>183 g</b> carbohidratos</span>
+          <span class="chip"><b>47 g</b> grasas</span>
+          <span class="chip"><b>2,2 L</b> agua</span>
+        </div>
+      </div>
+      <div class="day-progress" id="dayProgress" aria-live="polite"></div>
+    </div>
+    <p class="daily-total">Meta diaria: 4p panes y cereales · 2p frutas · 9½p carnes bajas en grasa · 4p aceites y grasas · 2p lácteos proteicos</p>
+  </header>
+
+  <section class="meal-route">
+    <div class="route-heading">
+      <h2>Comidas</h2>
+      <p>Cada horario muestra las elecciones completadas.</p>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Tiempos de comida"></nav>
+  </section>
+
+  <div class="layout">
+    <main id="panel"></main>
+    <aside class="plate" id="plate" aria-live="polite"></aside>
+  </div>
+
+  <section class="ref">
+    <div class="ref-heading">
+      <h2>Indicaciones del plan</h2>
+      <p>El armador resuelve cantidades. Estas indicaciones siguen aplicando aunque cambies una opción por otra dentro del mismo bloque.</p>
+    </div>
+    <div class="refgrid">
+      <div class="refcard"><span class="refnum">01</span><div><h4>Respeta crudo o cocido</h4><p>Las carnes se pesan cocidas. En cereales, el desplegable distingue "crudo" y "cocido": pesa el alimento en el estado que elegiste.</p></div></div>
+      <div class="refcard"><span class="refnum">02</span><div><h4>Usa siempre la misma taza</h4><p>1 cdta es una cucharadita de té. 1 cda es una cucharada sopera. 1 taza son 200 ml.</p></div></div>
+      <div class="refcard"><span class="refnum">03</span><div><h4>Verduras sin conteo</h4><p>En almuerzo y cena puedes comer verduras libremente. La pauta pide distintos colores y gran volumen.</p></div></div>
+      <div class="refcard"><span class="refnum">04</span><div><h4>Legumbres, cálculo estricto</h4><p>1½ taza cubre 1½ porciones de cereal y 1½ de carnes. Para llegar a 4 porciones de carnes todavía faltan 2½ porciones del alimento proteico elegido.</p></div></div>
+      <div class="refcard"><span class="refnum">05</span><div><h4>Guisos y estofados</h4><p>Sirve 1 taza sin caldo y luego agrega caldo libre. Si tiene poca proteína, la pauta indica sumar 2 a 3 porciones de carnes bajas en grasa.</p></div></div>
+      <div class="refcard"><span class="refnum">06</span><div><h4>Bebidas y alcohol</h4><p>Té, café y aguas de hierba son libres. Las bebidas deben ser light o zero. Reduce el alcohol al máximo.</p></div></div>
+      <div class="refcard"><span class="refnum">07</span><div><h4>Chocolate</h4><p>Cuando quieras algo dulce, la pauta permite 3 cuadritos de chocolate.</p></div></div>
+      <div class="refcard"><span class="refnum">08</span><div><h4>Aceite en spray</h4><p>En comidas sin una grasa planificada, usa solo 1 a 2 segundos de spray.</p></div></div>
+      <div class="refcard"><span class="refnum">09</span><div><h4>Hidratación</h4><p>350 ml antes de entrenar. Durante, 550 ml por hora. Después, 500 a 750 ml dentro de las 3 a 4 horas siguientes.</p></div></div>
+      <div class="refcard"><span class="refnum">10</span><div><h4>Suplementos</h4><p>Omega 3: 2 cápsulas al día con comida. Creatina monohidrato: 5 g todos los días, incluso sin entrenamiento.</p></div></div>
+    </div>
+  </section>
+
+  <details class="audit">
+    <summary>Cómo calcula las cantidades cuando los PDF no coinciden</summary>
+    <div class="audit-body">
+      <p><strong>Regla aplicada.</strong> La tabla de intercambios es la fuente matemática. La herramienta toma el valor de 1 porción y lo multiplica por las porciones asignadas a cada horario.</p>
+      <p><strong>Resultados que cambian.</strong> El pescado en almuerzo o cena queda en 320 g. En desayuno, 1½ porciones de huevo son 112,5 g, equivalentes a 3 huevos. El arroz blanco cocido queda en 195 g y el pan pita de la cena en 90 g.</p>
+      <p><strong>Todos los intercambios.</strong> Los desplegables incluyen los alimentos de la tabla general que no están marcados para evitar. Las opciones adicionales de la pauta, como Salmas, compota o proteína en polvo, aparecen aparte porque el PDF no siempre informa su equivalencia en gramos.</p>
+      <p><strong>Aceite de cocción.</strong> El PDF dice que para cocinar está considerada 1 cdta de aceite, pero no aclara si reemplaza o se suma a la grasa elegida. El armador no agrega una segunda cucharadita automáticamente. Confirma ese punto con Constanza antes de contarla aparte.</p>
+    </div>
+  </details>
+
+  <footer>
+    Fuente: "Plan de alimentación Facundo Zupel" y "Porciones de intercambio" · Nta. Constanza Zúñiga Burnier · Evaluación del 11 de septiembre de 2026. Esta herramienta organiza la pauta, no la modifica.
+  </footer>
+</div>
+
+<script>
+/* ============ TABLAS DE INTERCAMBIO (1 porción) — del PDF ============ */
+/* [nombre, gramos (null si no aplica), unidad, medida casera] */
+const MASTER = {
+  panes: [
+    ["Marraqueta",50,"g","½ unidad"],
+    ["Hallulla",50,"g","½ unidad"],
+    ["Pan de molde blanco o integral",60,"g","2 rebanadas"],
+    ["Pan pita blanco o integral",60,"g","1½ unidades"],
+    ["Pan de centeno",50,"g","2 rebanadas"],
+    ["Pan amasado",35,"g","¼ unidad"],
+    ["Tortilla de tacos / fajita",50,"g","1 tortilla grande XL"],
+    ["Galletas de agua",40,"g","7 unidades"],
+    ["Galletas de soda",40,"g","7 unidades"],
+    ["Galletas de chuño",40,"g","5 unidades"],
+    ["Galletas de arroz",35,"g","5 unidades grandes"],
+    ["Galletas de maíz",35,"g","5 unidades"],
+    ["Arroz crudo",40,"g","¼ taza"],
+    ["Arroz integral crudo",40,"g","¼ taza"],
+    ["Fideos crudos",40,"g","½ taza"],
+    ["Quinoa cruda",40,"g","¼ taza o 4 cucharadas"],
+    ["Avena cruda",40,"g","4 cucharadas"],
+    ["Maicena",40,"g","4 cucharadas"],
+    ["Chuño",40,"g","4 cucharadas"],
+    ["Chuchoca",40,"g","3 cucharadas"],
+    ["Harina tostada",40,"g","¼ taza"],
+    ["Harina de trigo",40,"g","4 cucharadas"],
+    ["Sémola",40,"g","3 cucharadas"],
+    ["Tapioca",40,"g","4 cucharadas"],
+    ["Arroz cocido",130,"g","¾ taza"],
+    ["Arroz integral cocido",120,"g","¾ taza"],
+    ["Choclo cocido",130,"g","¾ taza"],
+    ["Mote de maíz cocido",120,"g","¾ taza"],
+    ["Mote de trigo cocido",100,"g","¾ taza"],
+    ["Fideos cocidos",110,"g","¾ taza"],
+    ["Quinoa cocida",110,"g","¾ taza"],
+    ["Cabritas (popcorn)",35,"g","1½ taza"],
+    ["Papa",150,"g","1 unidad regular"],
+    ["Camote",120,"g","½ taza"],
+    ["Yuca",120,"g","½ taza"]
+  ],
+  frutas: [
+    ["Manzana",100,"g","1 unidad chica"],
+    ["Naranja",120,"g","1 unidad regular"],
+    ["Pera",100,"g","1 unidad chica"],
+    ["Durazno",130,"g","1 unidad regular"],
+    ["Plátano",60,"g","½ unidad"],
+    ["Mandarina",180,"g","2 unidades chicas"],
+    ["Kiwi",100,"g","2 unidades chicos"],
+    ["Arándanos",120,"g","½ taza"],
+    ["Frutillas",200,"g","1½ taza"],
+    ["Frambuesas",130,"g","1 taza"],
+    ["Mora",120,"g","½ taza"],
+    ["Piña",120,"g","¾ taza"],
+    ["Mango",90,"g","½ taza"],
+    ["Papaya",400,"g","3 unidades"],
+    ["Sandía",200,"g","1¼ taza"],
+    ["Melón",180,"g","1 taza"],
+    ["Uva",90,"g","10 unidades"],
+    ["Cerezas",90,"g","15 unidades"],
+    ["Ciruela",110,"g","3 unidades"],
+    ["Damasco",120,"g","3 unidades"],
+    ["Granada",70,"g","½ unidad chica"],
+    ["Guayaba",100,"g","1 unidad mediana"],
+    ["Caqui",90,"g","1 unidad chico"],
+    ["Chirimoya",90,"g","¼ unidad"],
+    ["Membrillo",100,"g","1 unidad chico"],
+    ["Níspero",120,"g","7 unidades"],
+    ["Pomelo",200,"g","1 unidad chico"],
+    ["Pepino dulce",240,"g","1 unidad grande"],
+    ["Tuna",150,"g","2 unidades medianas"],
+    ["Higos frescos",80,"g","2 unidades"],
+    ["Higos secos",25,"g","2 unidades"],
+    ["Ciruelas secas",30,"g","3 unidades"],
+    ["Damascos secos",30,"g","3 unidades"],
+    ["Huesillo",30,"g","1 unidad"],
+    ["Pasas",20,"g","20 unidades"]
+  ],
+  carnes: [
+    ["Vacuno magro (posta negra/rosada, asiento, filete, lomo liso, pollo ganso, punta paleta, entraña, tártaro, abastero)",50,"g","1 palma de mano"],
+    ["Pollo",50,"g","1 palma de mano"],
+    ["Pavo",50,"g","1 palma de mano"],
+    ["Pechuga de pavo",50,"g","2 rebanadas grandes"],
+    ["Cerdo (filete o pulpa)",50,"g","1 palma de mano"],
+    ["Atún o jurel al agua",60,"g","⅓ taza"],
+    ["Pescado (reineta, congrio, corvina, jurel, lenguado, merluza, pejegallo, pejerrey, tilapia)",80,"g","1 mano abierta"],
+    ["Huevo entero",75,"g","2 unidades"],
+    ["Camarón",120,"g","20 unidades"],
+    ["Cholga",80,"g","8 unidades"],
+    ["Choritos",60,"g","8 unidades"],
+    ["Jaiba",60,"g","3 cucharadas"],
+    ["Ostras",60,"g","6 unidades"],
+    ["Almejas",70,"g","7 unidades"],
+    ["Piures",120,"g","12 unidades"],
+    ["Locos",60,"g","1 unidad"],
+    ["Gambas",75,"g","15 unidades"],
+    ["Criadillas",100,"g","2 unidades"],
+    ["Proteína vegetal de soya",25,"g","2½ cucharadas"]
+  ],
+  aceites: [
+    ["Aceite (oliva, maravilla, maíz, soya, pepita de uva, canola, colza)",5,"ml","1 cucharadita"],
+    ["Palta",30,"g","2 cucharadas o ¼ de unidad"],
+    ["Almendras",6,"g","6 unidades"],
+    ["Maní sin sal",8,"g","8 unidades"],
+    ["Nueces",7.5,"g","3 mariposas"],
+    ["Aceitunas sin cuesco",30,"g","7 unidades"],
+    ["Pistachos",8,"g","10 unidades"],
+    ["Castañas de cajú",7.5,"g","3 unidades"],
+    ["Semillas de chía",12,"g","1 cucharada"],
+    ["Semillas de linaza",12,"g","1 cucharada"],
+    ["Semillas de zapallo",8,"g","1 cucharada"],
+    ["Queso crema light Santa Rosa",18,"g","1 cucharadita"]
+  ],
+  lacteos: [
+    ["Yogurt protein Soprole",155,"g","1 envase"],
+    ["Yogurt protein Plus Colun sin azúcar",150,"g","1 envase"],
+    ["Yogurt Goodnes protein Nestlé",140,"g","1 envase"],
+    ["Leche proteína Soprole",200,"ml","1 cajita (200 ml)"]
+  ]
+};
+
+/* ============ CONFIGURACIÓN DE LAS 4 COMIDAS — del PDF del plan ============ */
+const P_STR = {0.5:"½", 1:"1", 1.5:"1½", 2:"2", 4:"4"};
+
+/* La tabla de intercambio es la fuente matemática. Cada alimento se multiplica
+   por las porciones asignadas al horario. Las opciones sin equivalencia en la
+   tabla se mantienen como excepciones directas y se identifican en pantalla. */
+const REEMPLAZOS_FRUTA_COLACION = [
+  {name:"Pan de molde integral (reemplazo ocasional)", disp:"1 rebanada", sub:"Úsalo solo de vez en cuando en lugar de la fruta."},
+  {name:"Pan pita integral (reemplazo ocasional)", disp:"1 unidad", sub:"Úsalo solo de vez en cuando en lugar de la fruta."},
+  {name:"Galletas Salmas (reemplazo ocasional)", disp:"3 unidades", sub:"Úsalas solo de vez en cuando en lugar de la fruta."}
+];
+
+const EXTRAS_PANES_DESAYUNO = [
+  {name:"Galletas Salmas", disp:"6 unidades", sub:"Equivalencia directa del desayuno. El PDF no entrega gramos por porción."},
+  {name:"Granola Tika o Mizos", disp:"40 g", sub:"Equivalencia directa del desayuno: 1 porción = 40 g."},
+  {name:"Cereales Puri", disp:"40 g", sub:"Equivalencia directa del desayuno: 1 porción = 40 g."}
+];
+
+const EXTRAS_PROTEINA_DESAYUNO = [
+  {name:"Pasta de pollo casera tipo ave pimentón", disp:"60 a 80 g", sub:"Excepción de la pauta. Es un rango y no existe una equivalencia por porción en la tabla."},
+  {name:"Omelette de huevos", disp:"3 huevos · 112,5 g", sub:"Cálculo estricto: 1½ porciones × 75 g. Una porción equivale a 2 huevos, por lo tanto 1½ porciones equivalen a 3 huevos."},
+  {name:"Proteína en polvo", disp:"1 scoop", sub:"Excepción directa del desayuno. El PDF no informa gramos ni equivalencia para 1 porción."}
+];
+
+const EXTRAS_FRUTA = [
+  {name:"Compota de fruta", disp:"1 unidad", sub:"Excepción directa. El PDF no informa gramos por envase."}
+];
+
+const EXTRAS_GRASA_COLACION = [
+  {name:"Mantequilla de maní", disp:"1 cucharadita", double:"2 cucharaditas", sub:"La pauta indica directamente que 1 cucharadita equivale a 1 porción."}
+];
+
+function carnesFuertes(){
+  return {
+    key:"carnes", name:"Carnes bajas en grasa", p:4,
+    useMaster:true, extras:[]
+  };
+}
+function panesFuertes(){
+  return {
+    key:"panes", name:"Panes y cereales", p:1.5,
+    useMaster:true, extras:[]
+  };
+}
+function aceitesBase(){
+  return {
+    key:"aceites", name:"Aceites y grasas", p:1,
+    useMaster:true, extras:[]
+  };
+}
+
+const MEALS = [
+  {
+    id:"desayuno", label:"Desayuno", time:"8:00 – 11:00",
+    chips:["1p Panes y cereales","1½p Carnes bajas en grasa","1p Lácteos proteicos","1p Frutas"],
+    groups:[
+      {key:"panes", name:"Panes y cereales", p:1, useMaster:true, extras:EXTRAS_PANES_DESAYUNO},
+      {key:"carnes", name:"Carnes bajas en grasa", p:1.5, useMaster:true, extras:EXTRAS_PROTEINA_DESAYUNO},
+      {key:"lacteos", name:"Lácteos proteicos", p:1, useMaster:true, extras:[]},
+      {key:"frutas", name:"Frutas", p:1, useMaster:true, extras:EXTRAS_FRUTA}
+    ],
+    note:"Las cantidades de la tabla se calculan de forma estricta. Por eso 1½ porciones de huevo son 3 huevos y 1½ porciones de pollo son 75 g, aunque los ejemplos de la pauta principal muestren cantidades menores."
+  },
+  {
+    id:"almuerzo", label:"Almuerzo", time:"13:00 – 14:00",
+    chips:["4p Carnes bajas en grasa","1½p Panes y cereales","1p Aceites y grasas","Verduras libres"],
+    groups:[ carnesFuertes(), panesFuertes(), aceitesBase() ],
+    free:"Verduras variadas de libre consumo. Elige distintos colores y un gran volumen.",
+    note:"Para un cálculo estricto con legumbres: 1½ taza cubre 1½ porciones de cereal y 1½ de carnes. Para completar las 4 porciones de carnes faltan 2½ porciones. Eso equivale, por ejemplo, a 125 g de pollo/vacuno/cerdo, 200 g de pescado o 5 huevos."
+  },
+  {
+    id:"colacion", label:"Colación PM", time:"17:00 – 18:00 · pre-entrenamiento",
+    chips:["1p Frutas","1p Lácteos proteicos","2p Aceites y grasas"],
+    groups:[
+      {key:"frutas", name:"Fruta o reemplazo ocasional", p:1, useMaster:true, extras:EXTRAS_FRUTA.concat(REEMPLAZOS_FRUTA_COLACION)},
+      {key:"lacteos", name:"Lácteos proteicos", p:1, useMaster:true, extras:[]},
+      {key:"aceites", name:"Aceites y grasas", p:1, selects:2, mergeDuplicates:true, useMaster:true, extras:EXTRAS_GRASA_COLACION,
+        hint:"Son 2 porciones: elige 2 distintas o la misma dos veces.",
+      }
+    ],
+    note:"Es tu comida pre-entrenamiento. El pan como reemplazo de la fruta es solo de vez en cuando."
+  },
+  {
+    id:"cena", label:"Once / Cena", time:"20:00 – 21:00",
+    chips:["4p Carnes bajas en grasa","1½p Panes y cereales","1p Aceites y grasas","Verduras libres"],
+    groups:[
+      carnesFuertes(),
+      panesFuertes(),
+      aceitesBase()
+    ],
+    free:"Verduras variadas de libre consumo. Elige distintos colores y un gran volumen.",
+    note:"El reemplazo ocasional de la pauta sigue siendo 1 scoop de proteína + 300 ml de leche proteína Soprole + 2 porciones de fruta. Es una excepción directa y no se deriva de la tabla de intercambios."
+  }
+];
+
+/* ============ LÓGICA ============ */
+let state = {};
+try { state = JSON.parse(localStorage.getItem("planFacundoExactoV3") || "{}"); } catch(e){ state = {}; }
+let currentMeal = "desayuno";
+
+function save(){ try { localStorage.setItem("planFacundoExactoV3", JSON.stringify(state)); } catch(e){} }
+
+function formatNumber(value){
+  return new Intl.NumberFormat("es-CL", {maximumFractionDigits:2}).format(value);
+}
+
+function portionText(value){
+  return P_STR[value] || formatNumber(value);
+}
+
+function qtyFor(item, p){
+  const g = item[1], u = item[2], m = item[3];
+  const total = g * p;
+  const totalText = formatNumber(total) + " " + u;
+  const baseText = formatNumber(g) + " " + u;
+  if (p === 1) {
+    return {
+      main: totalText + " · " + m,
+      sub: "1 porción exacta = " + baseText + "."
+    };
+  }
+  return {
+    main: totalText,
+    sub: "Cálculo exacto: " + portionText(p) + " × " + baseText + " = " + totalText + ". Medida de 1 porción: " + m + "."
+  };
+}
+
+function buildOptions(group){
+  const plan = (group.extras || []).map((x, i) => ({
+      value:"x" + i,
+      label:x.name,
+      main:x.disp,
+      sub:x.sub || null,
+      double:x.double || null
+    }));
+  const tabla = group.useMaster ? MASTER[group.key].map((item, i) => {
+    const quantity = qtyFor(item, group.p);
+    const doubled = qtyFor(item, group.p * 2);
+    return {
+      value:"m" + i,
+      label:item[0],
+      main:quantity.main,
+      sub:quantity.sub,
+      double:doubled.main + " · 2 × " + item[3]
+    };
+  }) : [];
+  return {plan, tabla};
+}
+
+function optionHtml(opts){
+  return opts.map(o => '<option value="' + o.value + '">' + o.label + "</option>").join("");
+}
+
+function mealProgress(meal){
+  const mealState = state[meal.id] || {};
+  let selected = 0;
+  let required = 0;
+  meal.groups.forEach((group, gi) => {
+    const slots = group.selects || 1;
+    required += slots;
+    const values = mealState[gi] || [];
+    for (let s = 0; s < slots; s++) if (values[s]) selected++;
+  });
+  return {selected, required, complete:selected === required};
+}
+
+function renderDayProgress(){
+  const completed = MEALS.filter(m => mealProgress(m).complete).length;
+  const el = document.getElementById("dayProgress");
+  el.innerHTML = '<strong>' + completed + ' / ' + MEALS.length + '</strong>' +
+    '<span>comidas completas guardadas en este navegador</span>';
+}
+
+function renderTabs(){
+  document.getElementById("tabs").innerHTML = MEALS.map((m, i) => {
+    const p = mealProgress(m);
+    const classes = "tab" + (m.id === currentMeal ? " active" : "") + (p.complete ? " complete" : "");
+    return '<button class="' + classes + '" data-meal="' + m.id + '" aria-pressed="' + (m.id === currentMeal) + '">' +
+      '<span class="tab-index">0' + (i + 1) + '</span>' +
+      '<span class="tab-name">' + m.label + '</span>' +
+      '<small>' + m.time + '</small>' +
+      '<span class="tab-status">' + p.selected + '/' + p.required + '</span>' +
+    '</button>';
+  }).join("");
+  document.querySelectorAll(".tab").forEach(b =>
+    b.addEventListener("click", () => { currentMeal = b.dataset.meal; renderAll(); }));
+  renderDayProgress();
+}
+
+function renderMeal(){
+  const m = MEALS.find(x => x.id === currentMeal);
+  const mealNumber = String(MEALS.findIndex(x => x.id === m.id) + 1).padStart(2, "0");
+  if (!state[m.id]) state[m.id] = {};
+  let html = '<div class="meal-head">' +
+    '<div><span class="meal-kicker">Comida ' + mealNumber + '</span><h2 class="meal-title">' + m.label + '</h2></div>' +
+    '<span class="time">' + m.time + '</span>' +
+  '</div>' +
+  '<div class="formula-chips">' +
+    m.chips.map(c => '<span class="chip total">' + c + '</span>').join('') +
+  '</div>';
+
+  m.groups.forEach((g, gi) => {
+    const opts = buildOptions(g);
+    const nSel = g.selects || 1;
+    const pTxt = g.selects ? "2 porciones" : P_STR[g.p] + (g.p === 1 ? " porción" : " porciones");
+    html += '<div class="group"><h3>' + g.name + ' <span class="pbadge">' + pTxt + "</span></h3>";
+    if (g.hint) html += '<p class="ghint">' + g.hint + "</p>";
+    for (let s = 0; s < nSel; s++){
+      const selId = "sel-" + m.id + "-" + gi + "-" + s;
+      const qtyId = "qty-" + m.id + "-" + gi + "-" + s;
+      const cur = (state[m.id][gi] || [])[s] || "";
+      if (nSel > 1) html += '<p class="sellabel">Porción ' + (s + 1) + " de 2</p>";
+      html += '<select id="' + selId + '" data-group="' + gi + '" data-slot="' + s + '" aria-label="' + g.name + ', opción ' + (s + 1) + '">';
+      html += '<option value="">Elige una opción...</option>';
+      if (opts.plan.length && opts.tabla.length){
+        html += '<optgroup label="Excepciones directas de la pauta">' + optionHtml(opts.plan) + "</optgroup>";
+        html += '<optgroup label="Intercambios exactos (porciones × equivalencia)">' + optionHtml(opts.tabla) + "</optgroup>";
+      } else {
+        html += optionHtml(opts.plan.concat(opts.tabla));
+      }
+      html += "</select>";
+      html += '<div class="qty" id="' + qtyId + '" aria-live="polite"><span class="none">La cantidad exacta aparecerá aquí.</span></div>';
+    }
+    html += "</div>";
+  });
+
+  if (m.free) html += '<div class="free">' + m.free + "</div>";
+  if (m.note) html += '<div class="note">' + m.note + "</div>";
+  document.getElementById("panel").innerHTML = html;
+
+  document.querySelectorAll("#panel select").forEach(sel => {
+    const gi = sel.dataset.group, s = +sel.dataset.slot;
+    const cur = (state[m.id][gi] || [])[s];
+    if (cur) sel.value = cur;
+    updateQty(m, gi, s);
+    sel.addEventListener("change", () => {
+      if (!state[m.id][gi]) state[m.id][gi] = [];
+      state[m.id][gi][s] = sel.value;
+      save();
+      updateQty(m, gi, s);
+      renderTabs();
+      renderPlate();
+    });
+  });
+}
+
+function findOption(g, value){
+  const opts = buildOptions(g);
+  return opts.plan.concat(opts.tabla).find(o => o.value === value) || null;
+}
+
+function updateQty(meal, gi, s){
+  const el = document.getElementById("qty-" + meal.id + "-" + gi + "-" + s);
+  if (!el) return;
+  const val = (state[meal.id][gi] || [])[s];
+  const opt = val ? findOption(meal.groups[gi], val) : null;
+  if (!opt){ el.innerHTML = '<span class="none">La cantidad exacta aparecerá aquí.</span>'; return; }
+  el.innerHTML = opt.main + (opt.sub ? '<div class="qtysub">' + opt.sub + "</div>" : "");
+}
+
+function renderPlate(){
+  const m = MEALS.find(x => x.id === currentMeal);
+  const progress = mealProgress(m);
+  let items = [];
+  m.groups.forEach((g, gi) => {
+    const values = ((state[m.id] || {})[gi] || []).filter(Boolean);
+    if (g.mergeDuplicates && values.length === 2 && values[0] === values[1]){
+      const opt = findOption(g, values[0]);
+      if (opt) items.push({
+        group:g.name,
+        label:opt.label,
+        qty:opt.double || ("2 × " + opt.main)
+      });
+      return;
+    }
+    values.forEach(v => {
+      const opt = v ? findOption(g, v) : null;
+      if (opt) items.push({group:g.name, label:opt.label, qty:opt.main});
+    });
+  });
+  const percent = Math.round((progress.selected / progress.required) * 100);
+  let html = '<div class="receipt-inner">' +
+    '<span class="receipt-kicker">Resumen de la elección</span>' +
+    '<h2>Tu ' + m.label.toLowerCase() + '</h2>' +
+    '<p class="pm">' + m.time + '</p>' +
+    '<div class="receipt-progress"><div class="progress-track"><div class="progress-fill" style="width:' + percent + '%"></div></div>' +
+    '<span class="progress-label">' + progress.selected + '/' + progress.required + '</span></div>';
+  if (!items.length){
+    html += '<p class="empty">Elige una opción en cada bloque. Este resumen te mostrará el plato completo y las cantidades que debes servir.</p>';
+  } else {
+    html += "<ul>" + items.map(it =>
+      "<li><b>" + it.group + "</b>" + it.label + "<br><strong>" + it.qty + "</strong></li>").join("") + "</ul>";
+  }
+  if (m.free) html += '<p class="pm" style="margin-top:10px;">+ ' + m.free + "</p>";
+  if (progress.complete) html += '<p class="complete-message">Comida completa. Elegiste todo lo que pide este horario.</p>';
+  html += '<div class="btnrow">' +
+    '<button class="act primary" id="copyBtn">Copiar comida</button>' +
+    '<button class="act" id="clearBtn">Empezar de nuevo</button></div></div>';
+  document.getElementById("plate").innerHTML = html;
+
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    state[m.id] = {};
+    save();
+    renderTabs();
+    renderMeal();
+    renderPlate();
+  });
+  document.getElementById("copyBtn").addEventListener("click", () => {
+    let txt = m.label.toUpperCase() + " (" + m.time + ")\n";
+    items.forEach(it => { txt += "• " + it.group + ": " + it.label + ". " + it.qty + "\n"; });
+    if (m.free) txt += "• " + m.free + "\n";
+    const btn = document.getElementById("copyBtn");
+    copyText(txt).then(() => {
+      btn.textContent = "¡Copiado!";
+      setTimeout(() => { btn.textContent = "Copiar comida"; }, 1500);
+    }).catch(() => { btn.textContent = "No se pudo copiar"; });
+  });
+}
+
+function copyText(text){
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  return new Promise((resolve, reject) => {
+    const area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    try {
+      document.execCommand("copy") ? resolve() : reject();
+    } catch (error) {
+      reject(error);
+    } finally {
+      area.remove();
+    }
+  });
+}
+
+function renderAll(){ renderTabs(); renderMeal(); renderPlate(); }
+renderAll();
+</script>
+</body>
+</html>
