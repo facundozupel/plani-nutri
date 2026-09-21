@@ -7,7 +7,7 @@ nutricional de Facundo Zupel (Nta. Constanza Zúñiga Burnier, evaluación del 1
 
 | Archivo | Rol |
 | --- | --- |
-| `armar-comidas.html` | **La app completa.** Un único HTML autocontenido: markup + `<style>` + `<script>`. Sin build, sin dependencias, sin red. |
+| `index.html` | **La app completa.** Un único HTML autocontenido: markup + `<style>` + `<script>`. Sin build, sin dependencias, sin red. |
 | `Plan de alimentación Facundo Zupel.pdf` | Fuente 1: las 4 comidas, sus horarios, las porciones por grupo y las indicaciones generales. |
 | `Porciones de intercambio Facundo Zupell .pdf` | Fuente 2: la tabla de intercambios (gramos y medida casera de **1 porción** de cada alimento). |
 
@@ -15,7 +15,7 @@ Los dos PDF son la **fuente de verdad**. El HTML no inventa datos: los transcrib
 
 ## Cómo se corre
 
-Abrir `armar-comidas.html` en el navegador (doble clic o `open armar-comidas.html`).
+Abrir `index.html` en el navegador (doble clic o `open index.html`).
 No hay servidor, ni `npm`, ni tests. El estado de las elecciones se guarda en
 `localStorage` bajo la clave `planFacundoExactoV3`.
 
