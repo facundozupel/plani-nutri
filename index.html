@@ -6,1357 +6,826 @@
 <title>Arma tu comida — Plan Facundo</title>
 <style>
   :root {
-    --paper: #f3efe6;
-    --paper-deep: #e8e0d2;
-    --card: #fffdf8;
-    --ink: #17241b;
-    --muted: #6f756c;
-    --line: #d8d1c3;
-    --forest: #204f36;
-    --forest-deep: #153927;
-    --sage: #dce7dc;
-    --tomato: #d4573d;
-    --tomato-soft: #f7e4de;
-    --mustard: #b77927;
-    --mustard-soft: #f5ead6;
-    --white: #fffdf8;
-    --radius: 18px;
+    --countertop: #f6f6f3;
+    --plate: #ffffff;
+    --measure: #f1f3f1;
+    --control: #f3f4f2;
+    --control-hover: #eceeeb;
+    --ink: #171a18;
+    --ink-soft: #4f5651;
+    --ink-muted: #666c68;
+    --rule: rgba(23, 26, 24, .10);
+    --rule-strong: rgba(23, 26, 24, .20);
+    --hover: rgba(23, 26, 24, .04);
+    --herb: #285c43;
+    --herb-deep: #214c38;
+    --herb-soft: #edf3ef;
+    --on-herb: #ffffff;
+    --focus: rgba(40, 92, 67, .28);
+    --font: "Avenir Next", Avenir, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --ease: cubic-bezier(.23, 1, .32, 1);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { scroll-behavior: smooth; }
+  html {
+    background: var(--countertop);
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 
   body {
     min-height: 100vh;
     color: var(--ink);
-    font-family: "Avenir Next", Avenir, "Century Gothic", sans-serif;
+    font-family: var(--font);
+    font-size: 14px;
     line-height: 1.5;
-    background-color: var(--paper);
-    background-image:
-      linear-gradient(rgba(32, 79, 54, .035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(32, 79, 54, .035) 1px, transparent 1px);
-    background-size: 28px 28px;
+    background: var(--countertop);
   }
 
-  button, select { font: inherit; }
+  button, select { font: inherit; color: inherit; }
   button { -webkit-tap-highlight-color: transparent; }
-
-  .wrap {
-    width: min(1180px, calc(100% - 32px));
-    margin: 0 auto;
-    padding: 28px 0 72px;
-  }
-
-  header.top {
-    position: relative;
-    overflow: hidden;
-    padding: clamp(26px, 5vw, 58px);
-    color: var(--white);
-    background: var(--forest-deep);
-    border-radius: 28px;
-  }
-
-  header.top::after {
-    content: "";
-    position: absolute;
-    width: 230px;
-    height: 230px;
-    right: -84px;
-    bottom: -108px;
-    border: 34px solid rgba(255, 253, 248, .08);
-    border-radius: 50%;
-  }
-
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-    color: #c8d7cc;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-  }
-
-  .eyebrow::before {
-    content: "";
-    width: 26px;
-    height: 2px;
-    background: var(--tomato);
-  }
-
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 220px;
-    gap: 40px;
-    align-items: end;
-  }
-
-  h1, h2, .meal-title {
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-    letter-spacing: -.035em;
-  }
-
-  h1 {
-    max-width: 690px;
-    font-size: clamp(40px, 7vw, 74px);
-    font-weight: 500;
-    line-height: .97;
-  }
-
-  .sub {
-    max-width: 680px;
-    margin-top: 20px;
-    color: #d7e0d9;
-    font-size: 15px;
-    line-height: 1.7;
-  }
-
-  .day-progress {
-    position: relative;
-    z-index: 1;
-    padding-left: 20px;
-    border-left: 1px solid rgba(255, 255, 255, .18);
-  }
-
-  .day-progress strong {
-    display: block;
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 42px;
-    font-weight: 400;
-    line-height: 1;
-  }
-
-  .day-progress span {
-    display: block;
-    margin-top: 7px;
-    color: #bdcbbf;
-    font-size: 12px;
-    line-height: 1.4;
-  }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 18px;
-  }
-
-  .chip {
-    padding: 5px 11px;
-    color: #dce6df;
-    background: rgba(255, 255, 255, .07);
-    border: 1px solid rgba(255, 255, 255, .13);
-    border-radius: 999px;
-    font-size: 11.5px;
-  }
-
-  .chip b { color: var(--white); font-weight: 700; }
-
-  .chip.total {
-    color: var(--forest-deep);
-    background: var(--sage);
-    border-color: #c8d7c9;
-  }
-
-  .chip.total b { color: var(--forest-deep); }
-
-  .daily-total {
-    margin-top: 12px;
-    color: #bfcfc3;
-    font-size: 11.5px;
-  }
-
-  .meal-route { margin: 36px 0 24px; }
-
-  .route-heading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 12px;
-  }
-
-  .route-heading h2 {
-    font-size: 24px;
-    font-weight: 500;
-  }
-
-  .route-heading p {
-    color: var(--muted);
-    font-size: 12.5px;
-  }
-
-  .tabs {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .tab {
-    position: relative;
-    min-height: 96px;
-    padding: 14px;
-    color: var(--ink);
-    text-align: left;
-    background: rgba(255, 253, 248, .75);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    cursor: pointer;
-    transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
-  }
-
-  .tab:hover { transform: translateY(-2px); border-color: #aeb8ac; }
-
-  .tab-index {
-    display: block;
-    margin-bottom: 12px;
-    color: var(--tomato);
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 17px;
-  }
-
-  .tab-name { display: block; font-size: 14px; font-weight: 700; }
-
-  .tab small {
-    display: block;
-    margin-top: 4px;
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 500;
-  }
-
-  .tab-status {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    min-width: 30px;
-    padding: 2px 7px;
-    color: var(--muted);
-    text-align: center;
-    background: var(--paper);
-    border-radius: 999px;
-    font-size: 10px;
-    font-weight: 700;
-  }
-
-  .tab.active {
-    color: var(--white);
-    background: var(--forest);
-    border-color: var(--forest);
-  }
-
-  .tab.active .tab-index { color: #ef9b86; }
-  .tab.active small { color: #c4d3c8; }
-  .tab.active .tab-status { color: var(--forest); background: var(--white); }
-  .tab.complete:not(.active) .tab-status { color: var(--forest); background: var(--sage); }
-
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
-    gap: 22px;
-    align-items: start;
-  }
-
-  .meal-head {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 18px;
-    padding: 8px 2px 18px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .meal-kicker {
-    color: var(--tomato);
-    font-size: 10.5px;
-    font-weight: 800;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-  }
-
-  .meal-title {
-    margin-top: 2px;
-    font-size: 34px;
-    font-weight: 500;
-    line-height: 1.05;
-  }
-
-  .meal-head .time {
-    color: var(--muted);
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 17px;
-    font-style: italic;
-  }
-
-  .formula-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-bottom: 16px;
-  }
-
-  .group {
-    display: grid;
-    grid-template-columns: minmax(150px, .72fr) minmax(0, 1.5fr);
-    column-gap: 24px;
-    row-gap: 8px;
-    padding: 22px;
-    margin-bottom: 10px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    transition: border-color .18s ease, transform .18s ease;
-  }
-
-  .group:focus-within {
-    border-color: #8ba18e;
-    transform: translateY(-1px);
-  }
-
-  .group h3 {
-    grid-row: 1 / span 4;
-    align-self: start;
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.15;
-  }
-
-  .pbadge {
-    display: block;
-    width: fit-content;
-    margin-top: 9px;
-    padding: 3px 9px;
-    color: var(--forest);
-    background: var(--sage);
-    border-radius: 999px;
-    font-family: "Avenir Next", sans-serif;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: .03em;
-  }
-
-  .ghint {
-    grid-column: 2;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .sellabel {
-    grid-column: 2;
-    margin-top: 5px;
-    color: var(--muted);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-  }
-
-  select {
-    grid-column: 2;
-    width: 100%;
-    min-height: 46px;
-    padding: 10px 42px 10px 13px;
-    color: var(--ink);
-    background-color: var(--white);
-    border: 1px solid #cfc8bb;
-    border-radius: 10px;
-    cursor: pointer;
-  }
-
-  select:focus {
-    outline: 3px solid rgba(32, 79, 54, .15);
-    border-color: var(--forest);
-  }
-
-  .qty {
-    grid-column: 2;
-    min-height: 47px;
-    padding-left: 13px;
-    color: var(--forest);
-    border-left: 3px solid var(--tomato);
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.2;
-    animation: amountIn .2s ease both;
-  }
-
-  .qty .none {
-    color: #aaa397;
-    font-family: "Avenir Next", sans-serif;
-    font-size: 12.5px;
-    font-weight: 500;
-  }
-
-  .qtysub {
-    margin-top: 4px;
-    color: var(--muted);
-    font-family: "Avenir Next", sans-serif;
-    font-size: 11.5px;
-    font-weight: 500;
-    line-height: 1.45;
-  }
-
-  @keyframes amountIn {
-    from { opacity: .25; transform: translateY(3px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .free, .note {
-    position: relative;
-    padding: 14px 16px 14px 46px;
-    margin-bottom: 10px;
-    border-radius: 13px;
-    font-size: 12.5px;
-    line-height: 1.55;
-  }
-
-  .free { color: var(--forest-deep); background: var(--sage); border: 1px solid #c7d8c9; }
-  .note { color: #6c4b20; background: var(--mustard-soft); border: 1px solid #e2cfad; }
-
-  .free::before, .note::before {
-    position: absolute;
-    left: 16px;
-    top: 13px;
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  .free::before { content: "+"; color: var(--forest); }
-  .note::before { content: "i"; color: var(--mustard); font-style: italic; }
-
-  aside.plate {
-    position: sticky;
-    top: 16px;
-    overflow: hidden;
-    background: var(--card);
-    border: 1px solid #cbc3b4;
-    border-radius: 4px 4px 18px 18px;
-  }
-
-  aside.plate::before {
-    content: "";
-    display: block;
-    height: 9px;
-    background: repeating-linear-gradient(90deg, var(--paper-deep) 0 9px, transparent 9px 18px);
-  }
-
-  .receipt-inner { padding: 22px; }
-
-  .receipt-kicker {
-    color: var(--tomato);
-    font-size: 9.5px;
-    font-weight: 800;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-  }
-
-  aside.plate h2 {
-    margin-top: 4px;
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 26px;
-    font-weight: 500;
-  }
-
-  aside.plate .pm {
-    margin-top: 2px;
-    color: var(--muted);
-    font-size: 11.5px;
-  }
-
-  .receipt-progress {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 16px 0 7px;
-  }
-
-  .progress-track {
-    flex: 1;
-    height: 5px;
-    overflow: hidden;
-    background: var(--paper-deep);
-    border-radius: 99px;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--forest);
-    border-radius: inherit;
-    transition: width .25s ease;
-  }
-
-  .progress-label { color: var(--muted); font-size: 10px; font-weight: 700; }
-
-  .plate ul { margin-top: 10px; list-style: none; }
-
-  .plate li {
-    padding: 11px 0;
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 15px;
-    border-bottom: 1px dashed var(--line);
-  }
-
-  .plate li:last-child { border-bottom: none; }
-
-  .plate li b {
-    display: block;
-    margin-bottom: 2px;
-    color: var(--muted);
-    font-family: "Avenir Next", sans-serif;
-    font-size: 9.5px;
-    font-weight: 800;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-  }
-
-  .plate li strong { color: var(--forest); font-weight: 600; }
-  .plate .empty { padding: 18px 0 8px; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
-
-  .complete-message {
-    margin-top: 12px;
-    padding: 9px 11px;
-    color: var(--forest);
-    background: var(--sage);
-    border-radius: 8px;
-    font-size: 11.5px;
-    font-weight: 700;
-  }
-
-  .btnrow { display: flex; gap: 8px; margin-top: 16px; }
-
-  button.act {
-    flex: 1;
-    min-height: 39px;
-    padding: 8px 10px;
-    color: var(--ink);
-    background: transparent;
-    border: 1px solid var(--line);
-    border-radius: 9px;
-    font-size: 11.5px;
-    font-weight: 750;
-    cursor: pointer;
-    transition: transform .16s ease, background-color .16s ease;
-  }
-
-  button.act.primary { color: var(--white); background: var(--forest); border-color: var(--forest); }
-  button.act:hover { transform: translateY(-1px); }
-
-  section.ref { margin-top: 58px; }
-
-  .ref-heading {
-    display: grid;
-    grid-template-columns: .75fr 1.25fr;
-    gap: 30px;
-    align-items: end;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  section.ref h2 { font-size: 32px; font-weight: 500; }
-  .ref-heading p { color: var(--muted); font-size: 13px; line-height: 1.6; }
-
-  .refgrid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 4px;
-  }
-
-  .refcard {
-    display: grid;
-    grid-template-columns: 28px 1fr;
-    gap: 10px;
-    padding: 20px 14px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .refcard:nth-child(odd) { border-right: 1px solid var(--line); }
-
-  .refnum {
-    color: var(--tomato);
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 15px;
-  }
-
-  .refcard h4 { font-family: "Iowan Old Style", Georgia, serif; font-size: 16px; font-weight: 600; }
-  .refcard p { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.55; }
-
-  details.audit {
-    margin-top: 28px;
-    background: rgba(255, 253, 248, .72);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-  }
-
-  details.audit summary {
-    padding: 16px 18px;
-    font-family: "Iowan Old Style", Georgia, serif;
-    font-size: 17px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .audit-body { padding: 0 18px 18px; color: var(--muted); font-size: 12.5px; }
-  .audit-body p + p { margin-top: 9px; }
-  .audit-body strong { color: var(--ink); }
-
-  footer {
-    max-width: 760px;
-    margin: 34px auto 0;
-    color: var(--muted);
-    text-align: center;
-    font-size: 10.5px;
-    line-height: 1.6;
-  }
-
-  @media (max-width: 900px) {
-    .layout { grid-template-columns: 1fr; }
-    aside.plate { position: static; }
-    .tabs { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  @media (max-width: 680px) {
-    .wrap { width: min(100% - 20px, 1180px); padding-top: 10px; }
-    header.top { padding: 26px 20px 30px; border-radius: 20px; }
-    .hero-grid { grid-template-columns: 1fr; gap: 24px; }
-    .day-progress { padding: 0; border-left: 0; }
-    .day-progress strong { font-size: 32px; }
-    .route-heading { display: block; }
-    .route-heading p { margin-top: 3px; }
-    .tabs { display: flex; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; }
-    .tab { flex: 0 0 168px; scroll-snap-align: start; }
-    .meal-head { display: block; }
-    .meal-head .time { display: block; margin-top: 7px; }
-    .group { display: block; padding: 18px 16px; }
-    .group h3 { margin-bottom: 13px; }
-    .ghint, .sellabel { margin-top: 10px; }
-    select { margin-top: 7px; }
-    .qty { margin-top: 11px; }
-    .ref-heading { display: block; }
-    .ref-heading p { margin-top: 8px; }
-    .refgrid { grid-template-columns: 1fr; }
-    .refcard:nth-child(odd) { border-right: 0; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
-  }
-
-  @media print {
-    body { background: #fff; }
-    .wrap { width: 100%; padding: 0; }
-    header.top { color: var(--ink); background: #fff; border: 1px solid var(--line); }
-    .sub, .daily-total, .chip, .day-progress span { color: var(--ink); }
-    .tabs, .btnrow, section.ref, details.audit, footer { display: none; }
-    .layout { grid-template-columns: 1fr; }
-    aside.plate { position: static; page-break-inside: avoid; }
-  }
-
-  /* Minimal product interface */
-  :root {
-    --countertop: #f6f6f3;
-    --plate: #ffffff;
-    --ink: #171a18;
-    --ink-secondary: #535a55;
-    --ink-muted: #8a918c;
-    --rule: rgba(23, 26, 24, .10);
-    --rule-strong: rgba(23, 26, 24, .18);
-    --herb: #285c43;
-    --herb-soft: #edf3ef;
-    --measure: #f1f3f1;
-    --control: #f5f6f4;
-    --paper: var(--countertop);
-    --paper-deep: #e8ebe8;
-    --card: var(--plate);
-    --muted: var(--ink-secondary);
-    --line: var(--rule);
-    --forest: var(--herb);
-    --forest-deep: #214c38;
-    --sage: var(--herb-soft);
-    --tomato: var(--herb);
-    --mustard: var(--ink-secondary);
-    --mustard-soft: var(--measure);
-    --white: #ffffff;
-    --radius: 12px;
-  }
-
-  html {
-    background: var(--countertop);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-
-  body {
-    color: var(--ink);
-    font-family: "Avenir Next", Avenir, "Century Gothic", sans-serif;
-    background: var(--countertop);
-    background-image: none;
-  }
-
-  h1, h2, .meal-title,
-  .group h3, aside.plate h2,
-  .plate li, .refcard h4,
-  details.audit summary {
-    font-family: "Avenir Next", Avenir, "Century Gothic", sans-serif;
-    letter-spacing: -.02em;
-  }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  ul { list-style: none; }
+  [hidden] { display: none !important; }
 
   .wrap {
     width: min(1080px, calc(100% - 40px));
+    margin: 0 auto;
     padding: 40px 0 64px;
   }
 
-  header.top {
-    overflow: visible;
-    padding: 0 0 28px;
-    color: var(--ink);
-    background: transparent;
+  /* Encabezado */
+  .top {
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--rule);
-    border-radius: 0;
   }
 
-  header.top::after,
-  .eyebrow::before,
-  aside.plate::before {
-    display: none;
-  }
-
-  .eyebrow {
-    margin-bottom: 12px;
-    color: var(--ink-muted);
-    font-size: 10px;
+  .top h1 {
+    font-size: 32px;
     font-weight: 650;
-    letter-spacing: .12em;
-  }
-
-  .hero-grid {
-    grid-template-columns: minmax(0, 1fr) 152px;
-    gap: 48px;
-    align-items: end;
-  }
-
-  h1 {
-    max-width: none;
-    font-size: 36px;
-    font-weight: 650;
-    line-height: 1.12;
-    letter-spacing: -.035em;
-    text-wrap: balance;
+    line-height: 1.15;
+    letter-spacing: -.03em;
   }
 
   .sub {
-    max-width: 660px;
+    max-width: 64ch;
     margin-top: 8px;
-    color: var(--ink-secondary);
-    font-size: 14px;
-    line-height: 1.55;
-    text-wrap: pretty;
+    color: var(--ink-soft);
+    font-size: 15px;
   }
 
-  .day-progress {
-    padding-left: 20px;
-    border-left: 1px solid var(--rule-strong);
-  }
-
-  .day-progress strong {
-    color: var(--ink);
-    font-family: "Avenir Next", Avenir, sans-serif;
-    font-size: 28px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -.04em;
-  }
-
-  .day-progress span {
-    margin-top: 4px;
-    color: var(--ink-muted);
-    font-size: 11px;
-    line-height: 1.4;
-  }
-
-  header .chips {
-    gap: 0;
-    margin-top: 20px;
-  }
-
-  header .chip {
-    padding: 0 12px;
-    color: var(--ink-secondary);
-    background: transparent;
-    border: 0;
-    border-right: 1px solid var(--rule-strong);
-    border-radius: 0;
-    font-size: 11px;
+  .macros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    margin-top: 16px;
+    color: var(--ink-soft);
+    font-size: 13px;
     font-variant-numeric: tabular-nums;
   }
 
-  header .chip:first-child { padding-left: 0; }
-  header .chip:last-child { border-right: 0; }
-  header .chip b { color: var(--ink); font-weight: 650; }
+  .macros b { color: var(--ink); font-weight: 650; }
 
   .daily-total {
-    margin-top: 14px;
+    margin-top: 8px;
     color: var(--ink-muted);
-    font-size: 11px;
+    font-size: 13px;
   }
 
-  .meal-route { margin: 28px 0 24px; }
-
-  .route-heading {
-    margin-bottom: 8px;
-  }
-
-  .route-heading h2 {
-    font-size: 16px;
-    font-weight: 650;
-    letter-spacing: -.01em;
-  }
-
-  .route-heading p {
-    color: var(--ink-muted);
-    font-size: 11px;
-  }
+  /* Pestañas */
+  .meal-route { margin: 16px 0 20px; }
 
   .tabs {
-    gap: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, .8fr);
     border-bottom: 1px solid var(--rule);
-    scrollbar-width: none;
   }
 
-  .tabs::-webkit-scrollbar { display: none; }
-
   .tab {
-    min-height: 72px;
-    padding: 12px 8px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    min-height: 60px;
+    padding: 12px 12px 13px;
+    margin-bottom: -1px;
+    text-align: left;
     background: transparent;
     border: 0;
     border-bottom: 2px solid transparent;
-    border-radius: 0;
+    cursor: pointer;
     transition:
-      color 140ms cubic-bezier(.23, 1, .32, 1),
-      background-color 140ms cubic-bezier(.23, 1, .32, 1),
-      border-color 140ms cubic-bezier(.23, 1, .32, 1);
+      background-color 140ms var(--ease),
+      border-color 140ms var(--ease),
+      transform 120ms var(--ease);
   }
 
-  .tab:hover {
-    transform: none;
-    background: rgba(23, 26, 24, .025);
-  }
+  .tab:hover { background: var(--hover); }
+  .tab:active { transform: scale(.98); }
 
   .tab:focus-visible {
-    outline: 2px solid rgba(40, 92, 67, .32);
+    outline: 2px solid var(--focus);
     outline-offset: -2px;
   }
 
-  .tab:active { transform: scale(.98); }
-
-  .tab-index {
-    display: none;
-  }
+  .tab-day { border-left: 1px solid var(--rule); }
 
   .tab-name {
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .tab small {
-    margin-top: 3px;
-    color: var(--ink-muted);
-    font-size: 10px;
-  }
-
-  .tab-status {
-    top: 12px;
-    right: 8px;
-    min-width: auto;
-    padding: 0;
-    color: var(--ink-muted);
-    background: transparent;
-    border-radius: 0;
-    font-size: 10px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .tab.active {
-    color: var(--ink);
-    background: transparent;
-    border-color: var(--herb);
-  }
-
-  .tab.active .tab-name { color: var(--herb); }
-  .tab.active small { color: var(--ink-muted); }
-  .tab.active .tab-status {
-    color: var(--herb);
-    background: transparent;
-  }
-
-  .tab.complete:not(.active) .tab-status {
-    color: var(--herb);
-    background: transparent;
-  }
-
-  .layout {
-    grid-template-columns: minmax(0, 1fr) 312px;
-    gap: 20px;
-  }
-
-  #panel {
     overflow: hidden;
-    padding: 0 24px;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .tab-name .short { display: none; }
+
+  .tab-meta {
+    display: flex;
+    gap: 8px;
+    color: var(--ink-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .tab.active { border-bottom-color: var(--herb); }
+  .tab.active .tab-name { color: var(--herb); }
+  .tab.complete .tab-count { color: var(--herb); font-weight: 600; }
+
+  /* Armador */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 20px;
+    align-items: start;
+    scroll-margin-top: 16px;
+  }
+
+  .layout.is-day { grid-template-columns: minmax(0, 1fr); }
+
+  .panel {
+    min-width: 0;
+    padding: 0 24px 24px;
     background: var(--plate);
     border: 1px solid var(--rule);
-    border-radius: 14px;
+    border-radius: var(--radius-lg);
   }
 
   .meal-head {
-    margin: 0;
-    padding: 24px 0 16px;
-    border-bottom: 0;
-  }
-
-  .meal-kicker {
-    color: var(--ink-muted);
-    font-size: 9px;
-    font-weight: 650;
-    letter-spacing: .1em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 16px;
+    padding: 20px 0 16px;
   }
 
   .meal-title {
-    margin-top: 4px;
     font-size: 24px;
     font-weight: 650;
     line-height: 1.2;
-    letter-spacing: -.025em;
+    letter-spacing: -.02em;
   }
 
-  .meal-head .time {
-    color: var(--ink-secondary);
-    font-family: "Avenir Next", Avenir, sans-serif;
-    font-size: 12px;
-    font-style: normal;
+  .meal-time {
+    color: var(--ink-soft);
+    font-size: 14px;
     font-variant-numeric: tabular-nums;
   }
 
-  .formula-chips {
-    gap: 6px;
-    margin: 0 0 8px;
-  }
-
-  .formula-chips .chip.total {
-    padding: 4px 7px;
-    color: var(--ink-secondary);
-    background: var(--measure);
-    border: 0;
-    border-radius: 5px;
-    font-size: 10px;
-    font-weight: 500;
-  }
-
   .group {
-    grid-template-columns: minmax(145px, .65fr) minmax(0, 1.5fr);
-    column-gap: 24px;
-    row-gap: 8px;
+    display: grid;
+    grid-template-columns: minmax(0, 210px) minmax(0, 1fr);
+    gap: 12px 28px;
     padding: 20px 0;
-    margin: 0;
-    background: transparent;
-    border: 0;
     border-top: 1px solid var(--rule);
-    border-radius: 0;
-    transition: none;
   }
 
-  .group:focus-within {
-    border-color: var(--rule);
-    transform: none;
-  }
-
-  .group h3 {
-    font-size: 14px;
+  .group-name {
+    font-size: 16px;
     font-weight: 600;
     line-height: 1.35;
     letter-spacing: -.01em;
   }
 
-  .pbadge {
-    margin-top: 5px;
-    padding: 0;
-    color: var(--ink-muted);
-    background: transparent;
-    border-radius: 0;
-    font-family: "Avenir Next", Avenir, sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-  }
-
-  .ghint {
-    color: var(--ink-muted);
-    font-size: 11px;
-  }
-
-  .sellabel {
-    margin-top: 6px;
-    color: var(--ink-muted);
-    font-size: 9px;
+  .group-portions {
+    margin-top: 2px;
+    color: var(--herb);
+    font-size: 14px;
     font-weight: 650;
-    letter-spacing: .08em;
+    font-variant-numeric: tabular-nums;
   }
+
+  .group-hint {
+    margin-top: 8px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .group-body {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .slot-label {
+    margin-top: 4px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .slot-label:first-child { margin-top: 0; }
 
   select {
+    width: 100%;
     min-height: 44px;
-    padding: 9px 40px 9px 12px;
+    padding: 10px 40px 10px 12px;
     color: var(--ink);
+    font-size: 15px;
     background: var(--control);
     border: 1px solid transparent;
-    border-radius: 8px;
-    font-size: 13px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
     transition:
-      background-color 140ms cubic-bezier(.23, 1, .32, 1),
-      border-color 140ms cubic-bezier(.23, 1, .32, 1);
+      background-color 140ms var(--ease),
+      border-color 140ms var(--ease);
   }
 
-  select:hover { background: #eef0ed; }
+  select:hover { background: var(--control-hover); }
 
-  select:focus {
-    outline: 3px solid rgba(40, 92, 67, .12);
-    border-color: rgba(40, 92, 67, .5);
+  select:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 1px;
+    border-color: var(--herb);
   }
 
-  .qty {
-    min-height: 42px;
-    padding: 10px 12px;
-    color: var(--ink);
+  .amount {
+    padding: 14px 16px;
     background: var(--measure);
-    border: 0;
-    border-radius: 8px;
-    font-family: "Avenir Next", Avenir, sans-serif;
-    font-size: 20px;
+    border-radius: var(--radius-sm);
+  }
+
+  .amount.is-new { animation: appear 180ms var(--ease); }
+
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(2px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .amount-main {
+    font-size: 22px;
     font-weight: 650;
-    font-variant-numeric: tabular-nums;
-    animation: none;
-  }
-
-  .qty .none {
-    color: var(--ink-muted);
-    font-family: "Avenir Next", Avenir, sans-serif;
-    font-size: 11px;
-    font-weight: 450;
-  }
-
-  .qtysub {
-    margin-top: 3px;
-    color: var(--ink-secondary);
-    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
-    font-size: 10px;
-    font-weight: 400;
-    line-height: 1.5;
+    line-height: 1.25;
+    letter-spacing: -.01em;
     font-variant-numeric: tabular-nums;
   }
 
-  .free, .note {
-    padding: 16px 0 16px 20px;
-    margin: 0;
-    color: var(--ink-secondary);
-    background: transparent;
-    border: 0;
+  .calc {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px 12px;
+    margin-top: 12px;
+    padding-top: 12px;
     border-top: 1px solid var(--rule);
-    border-radius: 0;
-    font-size: 11px;
-    line-height: 1.55;
   }
 
-  .free::before, .note::before {
-    left: 0;
-    top: 17px;
+  .calc-term { display: grid; gap: 2px; }
+
+  .calc-term b {
+    font-size: 16px;
+    font-weight: 650;
+    line-height: 1.3;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .calc-term small {
+    color: var(--ink-muted);
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .calc-op {
+    color: var(--ink-muted);
+    font-size: 16px;
+    line-height: 1.3;
+  }
+
+  .calc-total b { color: var(--herb); }
+
+  .amount-note {
+    margin-top: 8px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .meal-notes { margin-top: 4px; }
+
+  .note {
+    position: relative;
+    padding: 14px 0 14px 18px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.5;
+    border-top: 1px solid var(--rule);
+  }
+
+  .note::before {
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: 2px;
     width: 6px;
     height: 6px;
-    color: transparent;
-    background: var(--herb);
+    background: var(--ink-muted);
     border-radius: 50%;
-    font-size: 0;
   }
 
-  .note::before { background: var(--ink-muted); }
+  .note-free::before { background: var(--herb); }
+  .note b { color: var(--ink); font-weight: 600; }
 
-  aside.plate {
+  /* Resumen del plato */
+  .plate {
+    position: sticky;
     top: 20px;
-    overflow: hidden;
+    padding: 20px;
     background: var(--plate);
     border: 1px solid var(--rule);
-    border-radius: 14px;
+    border-radius: var(--radius-lg);
   }
 
-  .receipt-inner { padding: 20px; }
-
-  .receipt-kicker {
-    color: var(--ink-muted);
-    font-size: 9px;
+  .plate-title {
+    font-size: 18px;
     font-weight: 650;
-    letter-spacing: .1em;
+    letter-spacing: -.01em;
   }
 
-  aside.plate h2 {
-    margin-top: 4px;
-    font-size: 20px;
-    font-weight: 650;
-    letter-spacing: -.02em;
-  }
-
-  aside.plate .pm {
+  .plate-time {
+    margin-top: 2px;
     color: var(--ink-muted);
-    font-size: 10px;
+    font-size: 13px;
   }
 
-  .receipt-progress { margin: 16px 0 4px; }
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 0 6px;
+  }
 
   .progress-track {
-    height: 3px;
+    flex: 1;
+    height: 4px;
+    overflow: hidden;
     background: var(--measure);
+    border-radius: 999px;
   }
 
   .progress-fill {
+    height: 100%;
     background: var(--herb);
-    transition: width 180ms cubic-bezier(.23, 1, .32, 1);
+    border-radius: inherit;
+    transform: scaleX(var(--done, 0));
+    transform-origin: left;
+    transition: transform 200ms var(--ease);
   }
 
   .progress-label {
     color: var(--ink-muted);
-    font-size: 9px;
+    font-size: 12px;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
-  .plate ul { margin-top: 8px; }
-
-  .plate li {
+  .plate-list li {
+    display: grid;
+    gap: 1px;
     padding: 12px 0;
-    font-family: "Avenir Next", Avenir, sans-serif;
-    font-size: 12px;
     border-bottom: 1px solid var(--rule);
   }
 
-  .plate li b {
-    margin-bottom: 3px;
+  .plate-list li:last-child { border-bottom: 0; }
+
+  .plate-group {
     color: var(--ink-muted);
-    font-family: "Avenir Next", Avenir, sans-serif;
-    font-size: 9px;
-    font-weight: 650;
-    letter-spacing: .06em;
+    font-size: 12px;
+    font-weight: 500;
   }
 
-  .plate li strong {
-    color: var(--ink);
-    font-size: 13px;
+  .plate-food { font-size: 14px; }
+
+  .plate-qty {
+    font-size: 14px;
     font-weight: 650;
     font-variant-numeric: tabular-nums;
   }
 
-  .plate .empty {
-    padding: 20px 0 10px;
-    color: var(--ink-muted);
-    font-size: 11px;
+  .plate-empty {
+    padding: 12px 0 4px;
+    color: var(--ink-soft);
+    font-size: 13px;
   }
 
-  .complete-message {
-    padding: 9px 10px;
+  .plate-free {
+    margin-top: 12px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .plate-done {
+    margin-top: 12px;
+    padding: 10px 12px;
     color: var(--herb);
-    background: var(--herb-soft);
-    border-radius: 7px;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 600;
+    background: var(--herb-soft);
+    border-radius: var(--radius-sm);
   }
 
-  .btnrow { margin-top: 16px; }
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
 
-  button.act {
+  .actions .btn { flex: 1; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-height: 40px;
-    padding: 8px 10px;
-    color: var(--ink-secondary);
+    padding: 8px 14px;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
     background: transparent;
     border: 1px solid var(--rule-strong);
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
     transition:
-      transform 120ms cubic-bezier(.23, 1, .32, 1),
-      background-color 120ms cubic-bezier(.23, 1, .32, 1),
-      border-color 120ms cubic-bezier(.23, 1, .32, 1);
+      transform 120ms var(--ease),
+      background-color 120ms var(--ease),
+      border-color 120ms var(--ease);
   }
 
-  button.act.primary {
-    color: #fff;
+  .btn:hover { background: var(--hover); }
+  .btn:active { transform: scale(.97); }
+
+  .btn:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    color: var(--on-herb);
     background: var(--herb);
     border-color: var(--herb);
   }
 
-  button.act:hover {
-    transform: none;
-    background: var(--measure);
+  .btn-primary:hover {
+    background: var(--herb-deep);
+    border-color: var(--herb-deep);
   }
 
-  button.act.primary:hover { background: #214c38; }
-  button.act:active { transform: scale(.97); }
+  /* Tu día */
+  .day-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 16px;
+    padding: 20px 0 16px;
+  }
 
-  button.act:focus-visible {
-    outline: 3px solid rgba(40, 92, 67, .18);
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+
+  .day-meal {
+    padding: 18px 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .day-meal-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .day-meal-link {
+    padding: 0;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    transition:
+      color 140ms var(--ease),
+      text-decoration-color 140ms var(--ease);
+  }
+
+  .day-meal-link:hover {
+    color: var(--herb);
+    text-decoration-color: currentColor;
+  }
+
+  .day-meal-link:focus-visible {
+    outline: 3px solid var(--focus);
     outline-offset: 2px;
+    border-radius: 4px;
   }
 
-  section.ref { margin-top: 48px; }
-
-  .ref-heading {
-    grid-template-columns: .7fr 1.3fr;
-    gap: 32px;
-    padding-bottom: 16px;
-    border-color: var(--rule);
+  .day-meal-count {
+    color: var(--ink-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
   }
 
-  section.ref h2 {
+  .day-meal-count.is-complete { color: var(--herb); font-weight: 600; }
+
+  .day-meal-time {
+    color: var(--ink-muted);
+    font-size: 12px;
+  }
+
+  .day-formula {
+    margin-top: 2px;
+    color: var(--ink-soft);
+    font-size: 12px;
+  }
+
+  .day-meal .plate-list { margin-top: 6px; }
+  .day-meal .plate-list li { padding: 8px 0; }
+
+  .day-missing {
+    margin-top: 10px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .targets {
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .targets h3 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .targets ul { margin-top: 8px; }
+
+  .targets li {
+    display: grid;
+    grid-template-columns: minmax(0, 190px) minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 2px 16px;
+    padding: 8px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .target-name { font-weight: 600; }
+
+  .target-sum {
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .target-total {
+    color: var(--herb);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .targets-note {
+    margin-top: 12px;
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  /* Barra inferior (solo pantallas angostas) */
+  .bar { display: none; }
+
+  .bar-info { flex: 1; min-width: 0; }
+
+  .bar-title {
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .bar-count {
+    color: var(--ink-muted);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Indicaciones generales */
+  .ref { margin-top: 48px; }
+
+  .ref-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 24px;
+    padding-bottom: 12px;
+  }
+
+  .ref-head h2 {
     font-size: 20px;
     font-weight: 650;
     letter-spacing: -.02em;
   }
 
-  .ref-heading p {
-    color: var(--ink-secondary);
-    font-size: 12px;
+  .ref-head p {
+    color: var(--ink-soft);
+    font-size: 13px;
   }
 
-  .refgrid { margin-top: 0; }
+  .refgrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+  }
 
   .refcard {
-    grid-template-columns: 24px 1fr;
-    gap: 8px;
-    padding: 18px 8px;
-    border-color: var(--rule);
+    padding: 16px 0;
+    border-top: 1px solid var(--rule);
   }
 
-  .refcard:nth-child(odd) { border-color: var(--rule); }
-
-  .refnum {
-    color: var(--ink-muted);
-    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
-    font-size: 10px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .refcard h4 {
-    font-size: 13px;
+  .refcard h3 {
+    font-size: 14px;
     font-weight: 600;
   }
 
   .refcard p {
     margin-top: 4px;
-    color: var(--ink-secondary);
-    font-size: 11px;
-  }
-
-  details.audit {
-    margin-top: 24px;
-    background: transparent;
-    border-color: var(--rule);
-    border-radius: 10px;
-  }
-
-  details.audit summary {
-    min-height: 44px;
-    padding: 13px 16px;
+    color: var(--ink-soft);
     font-size: 13px;
+  }
+
+  .audit {
+    margin-top: 24px;
+    background: var(--plate);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-md);
+  }
+
+  .audit summary {
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 14px;
     font-weight: 600;
+    cursor: pointer;
+  }
+
+  .audit summary:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
   }
 
   .audit-body {
     padding: 0 16px 16px;
-    color: var(--ink-secondary);
-    font-size: 11px;
+    color: var(--ink-soft);
+    font-size: 13px;
   }
 
+  .audit-body p + p { margin-top: 8px; }
+  .audit-body strong { color: var(--ink); font-weight: 600; }
+
   footer {
-    margin-top: 28px;
+    max-width: 64ch;
+    margin: 32px auto 0;
     color: var(--ink-muted);
-    font-size: 10px;
+    font-size: 12px;
+    text-align: center;
   }
 
   @media (max-width: 900px) {
-    .layout { grid-template-columns: 1fr; }
-    aside.plate { position: static; }
+    .meal-route {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--countertop);
+    }
+
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+      scroll-margin-top: 76px;
+    }
+
+    .plate { position: static; }
+    .day-head .btn { display: none; }
+
+    .bar {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+      background: var(--plate);
+      border-top: 1px solid var(--rule);
+    }
+
+    body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
   }
 
   @media (max-width: 680px) {
     .wrap {
-      width: min(100% - 24px, 1080px);
-      padding: 24px 0 48px;
+      width: calc(100% - 24px);
+      padding: 20px 0 32px;
     }
 
-    header.top {
-      padding: 0 0 22px;
-      border-radius: 0;
+    .top { padding-bottom: 16px; }
+    .top h1 { font-size: 26px; }
+    .sub, .daily-total { display: none; }
+
+    .macros {
+      gap: 2px 14px;
+      margin-top: 8px;
+      font-size: 12px;
     }
 
-    .hero-grid {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
+    .meal-route { margin: 0 0 12px; }
 
-    h1 { font-size: 30px; }
-
-    .day-progress {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      padding: 0;
-      border-left: 0;
-    }
-
-    .day-progress strong { font-size: 22px; }
-    .day-progress span { margin-top: 0; }
-
-    header .chips {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 7px 12px;
-    }
-
-    header .chip {
-      padding: 0;
-      border-right: 0;
-    }
-
-    .daily-total { line-height: 1.5; }
-    .route-heading p { margin-top: 2px; }
-
-    .tabs {
-      display: flex;
-      gap: 0;
-    }
+    .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, .7fr); }
 
     .tab {
-      flex: 0 0 148px;
-      min-height: 68px;
-      padding: 11px 8px 12px;
+      align-items: center;
+      min-height: 52px;
+      padding: 10px 4px 11px;
+      text-align: center;
     }
 
-    #panel { padding: 0 16px; }
-    .meal-head { padding: 20px 0 14px; }
-    .meal-head .time { margin-top: 5px; }
+    .tab-name { max-width: 100%; font-size: 13px; }
+    .tab-name .full { display: none; }
+    .tab-name .short { display: inline; }
+    .tab-time { display: none; }
+
+    .panel { padding: 0 16px 16px; }
+    .meal-head { padding: 16px 0 12px; }
     .meal-title { font-size: 22px; }
 
     .group {
-      display: block;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
       padding: 18px 0;
     }
 
-    .group h3 { margin-bottom: 12px; }
-    .ghint, .sellabel { margin-top: 8px; }
-    select { margin-top: 6px; }
-    .qty { margin-top: 8px; }
+    select { font-size: 16px; }
+    .amount-main { font-size: 20px; }
 
-    .ref-heading { display: block; }
-    .ref-heading p { margin-top: 7px; }
+    .day-grid { grid-template-columns: minmax(0, 1fr); }
+    .targets li { grid-template-columns: minmax(0, 1fr) auto; }
+    .target-sum { grid-row: 2; grid-column: 1 / -1; }
+
+    .refgrid { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  @media print {
+    body { padding: 0; background: var(--plate); }
+    .meal-route, .bar, .actions, .ref, .audit, footer, .day-head .btn { display: none !important; }
+    .layout:not(.is-day) .panel { display: none; }
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .plate { position: static; break-inside: avoid; }
   }
 </style>
 </head>
@@ -1364,53 +833,38 @@
 <div class="wrap">
 
   <header class="top">
-    <div class="eyebrow">Plan diario · cálculo exacto</div>
-    <div class="hero-grid">
-      <div>
-        <h1>Arma tu comida</h1>
-        <p class="sub">Elige un alimento por grupo. Calculamos las porciones asignadas por la equivalencia exacta de cada alimento. Ejemplo: 4 porciones de pescado × 80 g = 320 g.</p>
-        <div class="chips">
-          <span class="chip"><b>1.705</b> kcal/día</span>
-          <span class="chip"><b>136 g</b> proteína</span>
-          <span class="chip"><b>183 g</b> carbohidratos</span>
-          <span class="chip"><b>47 g</b> grasas</span>
-          <span class="chip"><b>2,2 L</b> agua</span>
-        </div>
-      </div>
-      <div class="day-progress" id="dayProgress" aria-live="polite"></div>
-    </div>
+    <h1>Arma tu comida</h1>
+    <p class="sub">Elige un alimento por grupo. La cantidad sale de multiplicar las porciones de cada comida por la equivalencia de la tabla: 4 porciones de pescado × 80 g = 320 g.</p>
+    <ul class="macros" aria-label="Requerimientos del día">
+      <li><b>1.705</b> kcal</li>
+      <li><b>136 g</b> proteína</li>
+      <li><b>183 g</b> carbohidratos</li>
+      <li><b>47 g</b> grasas</li>
+      <li><b>2,2 L</b> agua</li>
+    </ul>
     <p class="daily-total">Meta diaria: 4p panes y cereales · 2p frutas · 9½p carnes bajas en grasa · 4p aceites y grasas · 2p lácteos proteicos</p>
   </header>
 
-  <section class="meal-route">
-    <div class="route-heading">
-      <h2>Comidas</h2>
-      <p>Cada horario muestra las elecciones completadas.</p>
-    </div>
-    <nav class="tabs" id="tabs" aria-label="Tiempos de comida"></nav>
-  </section>
+  <div class="meal-route">
+    <nav class="tabs" id="tabs" aria-label="Comidas del día"></nav>
+  </div>
 
-  <div class="layout">
-    <main id="panel"></main>
-    <aside class="plate" id="plate" aria-live="polite"></aside>
+  <div class="layout" id="layout">
+    <main class="panel" id="panel"></main>
+    <aside class="plate" id="plate"></aside>
   </div>
 
   <section class="ref">
-    <div class="ref-heading">
-      <h2>Indicaciones del plan</h2>
-      <p>El armador resuelve cantidades. Estas indicaciones siguen aplicando aunque cambies una opción por otra dentro del mismo bloque.</p>
+    <div class="ref-head">
+      <h2>Indicaciones generales</h2>
+      <p>Las que dependen de cada comida aparecen junto a sus alimentos.</p>
     </div>
     <div class="refgrid">
-      <div class="refcard"><span class="refnum">01</span><div><h4>Respeta crudo o cocido</h4><p>Las carnes se pesan cocidas. En cereales, el desplegable distingue "crudo" y "cocido": pesa el alimento en el estado que elegiste.</p></div></div>
-      <div class="refcard"><span class="refnum">02</span><div><h4>Usa siempre la misma taza</h4><p>1 cdta es una cucharadita de té. 1 cda es una cucharada sopera. 1 taza son 200 ml.</p></div></div>
-      <div class="refcard"><span class="refnum">03</span><div><h4>Verduras sin conteo</h4><p>En almuerzo y cena puedes comer verduras libremente. La pauta pide distintos colores y gran volumen.</p></div></div>
-      <div class="refcard"><span class="refnum">04</span><div><h4>Legumbres, cálculo estricto</h4><p>1½ taza cubre 1½ porciones de cereal y 1½ de carnes. Para llegar a 4 porciones de carnes todavía faltan 2½ porciones del alimento proteico elegido.</p></div></div>
-      <div class="refcard"><span class="refnum">05</span><div><h4>Guisos y estofados</h4><p>Sirve 1 taza sin caldo y luego agrega caldo libre. Si tiene poca proteína, la pauta indica sumar 2 a 3 porciones de carnes bajas en grasa.</p></div></div>
-      <div class="refcard"><span class="refnum">06</span><div><h4>Bebidas y alcohol</h4><p>Té, café y aguas de hierba son libres. Las bebidas deben ser light o zero. Reduce el alcohol al máximo.</p></div></div>
-      <div class="refcard"><span class="refnum">07</span><div><h4>Chocolate</h4><p>Cuando quieras algo dulce, la pauta permite 3 cuadritos de chocolate.</p></div></div>
-      <div class="refcard"><span class="refnum">08</span><div><h4>Aceite en spray</h4><p>En comidas sin una grasa planificada, usa solo 1 a 2 segundos de spray.</p></div></div>
-      <div class="refcard"><span class="refnum">09</span><div><h4>Hidratación</h4><p>350 ml antes de entrenar. Durante, 550 ml por hora. Después, 500 a 750 ml dentro de las 3 a 4 horas siguientes.</p></div></div>
-      <div class="refcard"><span class="refnum">10</span><div><h4>Suplementos</h4><p>Omega 3: 2 cápsulas al día con comida. Creatina monohidrato: 5 g todos los días, incluso sin entrenamiento.</p></div></div>
+      <div class="refcard"><h3>Medidas caseras</h3><p>1 cdta es una cucharadita de té, 1 cda es una cucharada sopera y 1 taza son 200 ml. Son referencias. Para el peso exacto, usa una balanza.</p></div>
+      <div class="refcard"><h3>Bebidas y alcohol</h3><p>Té, café y aguas de hierba son libres. Las bebidas, solo light o zero. Evita el alcohol o bájalo al máximo; si tomas, prefiere vino, espumante brut o cerveza en poca cantidad.</p></div>
+      <div class="refcard"><h3>Chocolate</h3><p>Cuando quieras algo dulce, la porción son 3 cuadritos.</p></div>
+      <div class="refcard"><h3>Hidratación</h3><p>2,2 L al día. Antes de entrenar, 350 ml en las 1 a 2 horas previas. Durante, 550 ml por hora, cada 15 a 20 minutos. Después, 500 a 750 ml en las 3 a 4 horas siguientes. Con calor o mucha transpiración, suma electrolitos al terminar.</p></div>
+      <div class="refcard"><h3>Suplementos</h3><p>Omega 3: 2 cápsulas al día con alguna comida. Creatina monohidrato: 5 g (1 scoop al ras) todos los días, también los días sin entrenamiento.</p></div>
     </div>
   </section>
 
@@ -1429,6 +883,8 @@
     Fuente: "Plan de alimentación Facundo Zupel" y "Porciones de intercambio" · Nta. Constanza Zúñiga Burnier · Evaluación del 11 de septiembre de 2026. Esta herramienta organiza la pauta, no la modifica.
   </footer>
 </div>
+
+<div class="bar" id="bar"></div>
 
 <script>
 /* ============ TABLAS DE INTERCAMBIO (1 porción) — del PDF ============ */
@@ -1558,100 +1014,143 @@ const P_STR = {0.125:"⅛", 0.25:"¼", 0.375:"⅜", 0.5:"½", 0.625:"⅝", 0.75:
    por las porciones asignadas al horario. Las opciones sin equivalencia en la
    tabla se mantienen como excepciones directas y se identifican en pantalla. */
 const REEMPLAZOS_FRUTA_COLACION = [
-  {name:"Pan de molde integral (reemplazo ocasional)", disp:"1 rebanada", sub:"Úsalo solo de vez en cuando en lugar de la fruta."},
-  {name:"Pan pita integral (reemplazo ocasional)", disp:"1 unidad", sub:"Úsalo solo de vez en cuando en lugar de la fruta."},
-  {name:"Galletas Salmas (reemplazo ocasional)", disp:"3 unidades", sub:"Úsalas solo de vez en cuando en lugar de la fruta."}
+  {name:"Pan de molde integral", disp:"1 rebanada", sub:"Solo de vez en cuando, en lugar de la fruta.", section:"En vez de fruta, de vez en cuando"},
+  {name:"Pan pita integral", disp:"1 unidad", sub:"Solo de vez en cuando, en lugar de la fruta.", section:"En vez de fruta, de vez en cuando"},
+  {name:"Galletas Salmas", disp:"3 unidades", sub:"Solo de vez en cuando, en lugar de la fruta.", section:"En vez de fruta, de vez en cuando"}
 ];
 
 const EXTRAS_PANES_DESAYUNO = [
-  {name:"Galletas Salmas", disp:"6 unidades", sub:"Equivalencia directa del desayuno. El PDF no entrega gramos por porción."},
-  {name:"Granola Tika o Mizos", disp:"40 g", sub:"Equivalencia directa del desayuno: 1 porción = 40 g."},
-  {name:"Cereales Puri", disp:"40 g", sub:"Equivalencia directa del desayuno: 1 porción = 40 g."}
+  {name:"Galletas Salmas", disp:"6 unidades", sub:"Cantidad indicada en tu pauta. El PDF no trae su peso."},
+  {name:"Granola Tika o Mizos", disp:"40 g", sub:"Cantidad indicada en tu pauta para el desayuno."},
+  {name:"Cereales Puri", disp:"40 g", sub:"Cantidad indicada en tu pauta para el desayuno."}
 ];
 
 const EXTRAS_PROTEINA_DESAYUNO = [
-  {name:"Pasta de pollo casera tipo ave pimentón", disp:"60 a 80 g", sub:"Excepción de la pauta. Es un rango y no existe una equivalencia por porción en la tabla."},
-  {name:"Omelette de huevos", disp:"3 huevos · 112,5 g", sub:"Cálculo estricto: 1½ porciones × 75 g. Una porción equivale a 2 huevos, por lo tanto 1½ porciones equivalen a 3 huevos."},
-  {name:"Proteína en polvo", disp:"1 scoop", sub:"Excepción directa del desayuno. El PDF no informa gramos ni equivalencia para 1 porción."}
+  {name:"Pasta de pollo casera tipo ave pimentón", disp:"60 a 80 g", sub:"Tu pauta da un rango. La tabla no trae esta preparación."},
+  {name:"Omelette de huevos", disp:"3 huevos · 112,5 g", sub:"Igual que el huevo: 1½ porciones × 75 g = 112,5 g, o sea 3 huevos. Verduras a libre elección."},
+  {name:"Proteína en polvo", disp:"1 scoop", sub:"Cantidad indicada en tu pauta. El PDF no trae su peso."}
 ];
 
 const EXTRAS_FRUTA = [
-  {name:"Compota de fruta", disp:"1 unidad", sub:"Excepción directa. El PDF no informa gramos por envase."}
+  {name:"Compota de fruta", disp:"1 unidad", sub:"Cantidad indicada en tu pauta. El PDF no trae su peso."}
 ];
 
 const EXTRAS_GRASA_COLACION = [
-  {name:"Mantequilla de maní", disp:"1 cucharadita", double:"2 cucharaditas", sub:"La pauta indica directamente que 1 cucharadita equivale a 1 porción."}
+  {name:"Mantequilla de maní", disp:"1 cucharadita", double:"2 cucharaditas", sub:"Tu pauta indica que 1 cucharadita es 1 porción."}
 ];
+
+/* Secciones de los desplegables, en el orden de MASTER. Panes usa los
+   subtítulos de la tabla de intercambios; frutas y carnes no traen subtítulos
+   en el PDF y se agrupan por tipo. Cada sección parte en el alimento indicado
+   y sigue hasta la próxima. */
+const SECCIONES = {
+  panes: [
+    ["Panes", "Marraqueta"], ["Galletas", "Galletas de agua"],
+    ["Cereales crudos", "Arroz crudo"], ["Cereales cocidos", "Arroz cocido"],
+    ["Tubérculos", "Papa"]
+  ],
+  frutas: [["Frescas", "Manzana"], ["Secas", "Higos secos"]],
+  carnes: [
+    ["Carnes y aves", "Vacuno magro"], ["Pescados", "Atún o jurel al agua"],
+    ["Huevo", "Huevo entero"], ["Mariscos", "Camarón"], ["Otras", "Criadillas"]
+  ]
+};
+
+const PISTA_CEREAL = "Si es un cereal, pésalo como dice su nombre: crudo o cocido.";
+const PISTA_CARNES = "Se pesan cocidas.";
+const VERDURAS_LIBRES = "Verduras variadas de libre consumo. Elige distintos colores y un gran volumen.";
+const NOTA_LEGUMBRES = "<b>Legumbres.</b> 1 taza equivale a 1 porción de carnes y 1 de cereales. Con 1½ taza cubres los cereales de esta comida y te faltan 2½ porciones de carnes: por ejemplo, 125 g de pollo, 200 g de pescado o 5 huevos.";
+const NOTA_GUISOS = "<b>Guisos o estofados.</b> Sirve 1 taza sin caldo y después agrega caldo libre. Como suelen traer poca proteína, suma 2 a 3 porciones de carnes bajas en grasa.";
 
 function carnesFuertes(){
   return {
     key:"carnes", name:"Carnes bajas en grasa", p:4,
-    useMaster:true, extras:[]
+    useMaster:true, extras:[], hint:PISTA_CARNES
   };
 }
 function panesFuertes(){
   return {
     key:"panes", name:"Panes y cereales", p:1.5,
-    useMaster:true, extras:[]
+    useMaster:true, extras:[], hint:"Prefiere opciones integrales. " + PISTA_CEREAL
   };
 }
 function aceitesBase(){
   return {
     key:"aceites", name:"Aceites y grasas", p:1,
-    useMaster:true, extras:[]
+    useMaster:true, extras:[], hint:"Tu pauta ya considera 1 cdta de aceite para cocinar."
   };
 }
 
 const MEALS = [
   {
-    id:"desayuno", label:"Desayuno", time:"8:00 – 11:00",
+    id:"desayuno", label:"Desayuno", short:"Desayuno", time:"8:00 – 11:00",
     chips:["1p Panes y cereales","1½p Carnes bajas en grasa","1p Lácteos proteicos","1p Frutas"],
     groups:[
-      {key:"panes", name:"Panes y cereales", p:1, useMaster:true, extras:EXTRAS_PANES_DESAYUNO},
-      {key:"carnes", name:"Carnes bajas en grasa", p:1.5, useMaster:true, extras:EXTRAS_PROTEINA_DESAYUNO},
+      {key:"panes", name:"Panes y cereales", p:1, useMaster:true, extras:EXTRAS_PANES_DESAYUNO, hint:PISTA_CEREAL},
+      {key:"carnes", name:"Carnes bajas en grasa", p:1.5, useMaster:true, extras:EXTRAS_PROTEINA_DESAYUNO,
+        hint:PISTA_CARNES + " Los días de trabajo puedes usar 1 scoop de proteína en el yogurt o pasar este grupo a la colación, pero tiene que estar sí o sí en tu día."},
       {key:"lacteos", name:"Lácteos proteicos", p:1, useMaster:true, extras:[]},
       {key:"frutas", name:"Frutas", p:1, useMaster:true, extras:EXTRAS_FRUTA}
     ],
-    note:"Las cantidades de la tabla se calculan de forma estricta. Por eso 1½ porciones de huevo son 3 huevos y 1½ porciones de pollo son 75 g, aunque los ejemplos de la pauta principal muestren cantidades menores."
+    notes:[
+      "Cocina con 1 a 2 segundos de aceite en spray.",
+      "<b>Cálculo estricto.</b> Los ejemplos de tu pauta usan 2 huevos o 50 g de pollo. Acá manda la tabla: 1½ porciones son 3 huevos o 75 g de pollo."
+    ]
   },
   {
-    id:"almuerzo", label:"Almuerzo", time:"13:00 – 14:00",
+    id:"almuerzo", label:"Almuerzo", short:"Almuerzo", time:"13:00 – 14:00",
     chips:["4p Carnes bajas en grasa","1½p Panes y cereales","1p Aceites y grasas","Verduras libres"],
     groups:[ carnesFuertes(), panesFuertes(), aceitesBase() ],
-    free:"Verduras variadas de libre consumo. Elige distintos colores y un gran volumen.",
-    note:"Para un cálculo estricto con legumbres: 1½ taza cubre 1½ porciones de cereal y 1½ de carnes. Para completar las 4 porciones de carnes faltan 2½ porciones. Eso equivale, por ejemplo, a 125 g de pollo/vacuno/cerdo, 200 g de pescado o 5 huevos."
+    free:VERDURAS_LIBRES,
+    notes:[NOTA_LEGUMBRES, NOTA_GUISOS]
   },
   {
-    id:"colacion", label:"Colación PM", time:"17:00 – 18:00 · pre-entrenamiento",
+    id:"colacion", label:"Colación PM", short:"Colación", time:"17:00 – 18:00", detail:"pre-entrenamiento",
     chips:["1p Frutas","1p Lácteos proteicos","2p Aceites y grasas"],
     groups:[
-      {key:"frutas", name:"Fruta o reemplazo ocasional", p:1, useMaster:true, extras:EXTRAS_FRUTA.concat(REEMPLAZOS_FRUTA_COLACION)},
+      {key:"frutas", name:"Fruta o reemplazo ocasional", p:1, useMaster:true, extras:EXTRAS_FRUTA.concat(REEMPLAZOS_FRUTA_COLACION),
+        hint:"De vez en cuando puedes cambiar la fruta por pan o galletas Salmas."},
       {key:"lacteos", name:"Lácteos proteicos", p:1, useMaster:true, extras:[]},
       {key:"aceites", name:"Aceites y grasas", p:1, selects:2, mergeDuplicates:true, useMaster:true, extras:EXTRAS_GRASA_COLACION,
-        hint:"Son 2 porciones: elige 2 distintas o la misma dos veces.",
-      }
+        hint:"Son 2 porciones: elige 2 distintas o la misma dos veces."}
     ],
-    note:"Es tu comida pre-entrenamiento. El pan como reemplazo de la fruta es solo de vez en cuando."
+    notes:["<b>Antes de entrenar.</b> Toma 350 ml de agua en las 1 a 2 horas previas."]
   },
   {
-    id:"cena", label:"Once / Cena", time:"20:00 – 21:00",
+    id:"cena", label:"Once / Cena", short:"Cena", time:"20:00 – 21:00",
     chips:["4p Carnes bajas en grasa","1½p Panes y cereales","1p Aceites y grasas","Verduras libres"],
     groups:[
       carnesFuertes(),
       panesFuertes(),
       aceitesBase()
     ],
-    free:"Verduras variadas de libre consumo. Elige distintos colores y un gran volumen.",
-    note:"El reemplazo ocasional de la pauta sigue siendo 1 scoop de proteína + 300 ml de leche proteína Soprole + 2 porciones de fruta. Es una excepción directa y no se deriva de la tabla de intercambios."
+    free:VERDURAS_LIBRES,
+    notes:[
+      NOTA_LEGUMBRES,
+      NOTA_GUISOS,
+      "<b>Si no quieres once ni cena.</b> Cámbiala por 1 scoop de proteína en polvo + 300 ml de leche proteína Soprole + 2 porciones de fruta. La pauta pide que sea la menor cantidad de veces a la semana."
+    ]
   }
 ];
 
-/* ============ LÓGICA ============ */
-let state = {};
-try { state = JSON.parse(localStorage.getItem("planFacundoExactoV3") || "{}"); } catch(e){ state = {}; }
-let currentMeal = "desayuno";
+const GROUP_LABELS = {
+  panes:"Panes y cereales", frutas:"Frutas", carnes:"Carnes bajas en grasa",
+  aceites:"Aceites y grasas", lacteos:"Lácteos proteicos"
+};
 
-function save(){ try { localStorage.setItem("planFacundoExactoV3", JSON.stringify(state)); } catch(e){} }
+/* ============ LÓGICA ============ */
+const STORAGE_KEY = "planFacundoExactoV3";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch(e){ state = {}; }
+let view = "desayuno";
+
+const tabsEl = document.getElementById("tabs");
+const layout = document.getElementById("layout");
+const panel = document.getElementById("panel");
+const plate = document.getElementById("plate");
+const bar = document.getElementById("bar");
+
+function save(){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){} }
 
 function formatNumber(value){
   return new Intl.NumberFormat("es-CL", {maximumFractionDigits:2}).format(value);
@@ -1703,209 +1202,327 @@ function measureFor(item, p){
 
 function qtyFor(item, p){
   const g = item[1], u = item[2];
-  const totalText = formatNumber(g * p) + " " + u;
-  const baseText = formatNumber(g) + " " + u;
-  const measure = measureFor(item, p);
-  const eggReference = item[0] === "Huevo entero"
-    ? " Según esta equivalencia, 1 huevo = 37,5 g." : "";
+  const total = formatNumber(g * p) + " " + u;
   return {
-    main: measure + " · " + totalText,
-    sub: "Tabla: " + measureFor(item, 1) + " = " + baseText + " por porción. " +
-      portionText(p) + (p === 1 ? " porción" : " porciones") + " = " + totalText + "." + eggReference +
-      " La medida casera es una referencia; para ajustar el peso, usa una balanza."
+    main: measureFor(item, p) + " · " + total,
+    p,
+    base: formatNumber(g) + " " + u,
+    per: measureFor(item, 1),
+    total
   };
 }
 
+/* La tabla da el huevo por pares (2 unidades = 75 g); de ahí sale el valor de 1 huevo. */
+function unitNote(item){
+  if (item[0] !== "Huevo entero") return null;
+  const count = parseInt(item[3], 10);
+  return "1 huevo = " + portionText(1 / count) + " porción = " + formatNumber(item[1] / count) + " " + item[2] + ".";
+}
+
+/* Los nombres largos traen entre paréntesis los cortes o tipos que incluyen:
+   el desplegable muestra el nombre y el detalle aparece al elegirlo. */
+function splitName(name){
+  const cut = name.indexOf(" (");
+  if (cut < 0 || name.length <= 32) return {label:name, detail:null};
+  return {label:name.slice(0, cut), detail:name.slice(cut + 2, -1)};
+}
+
 function buildOptions(group){
-  const plan = (group.extras || []).map((x, i) => ({
-      value:"x" + i,
-      label:x.name,
-      main:x.disp,
-      sub:x.sub || null,
-      double:x.double || null
-    }));
-  const tabla = group.useMaster ? MASTER[group.key].map((item, i) => {
+  const extras = (group.extras || []).map((x, i) => ({
+    value:"x" + i, label:x.name, section:x.section || null,
+    main:x.disp, note:x.sub || null, detail:null, calc:null, double:x.double || null
+  }));
+  const table = group.useMaster ? MASTER[group.key].map((item, i) => {
+    const name = splitName(item[0]);
     const quantity = qtyFor(item, group.p);
-    const doubled = qtyFor(item, group.p * 2);
     return {
-      value:"m" + i,
-      label:item[0],
-      main:quantity.main,
-      sub:quantity.sub,
-      double:doubled.main
+      value:"m" + i, label:name.label, section:null,
+      main:quantity.main, note:unitNote(item), detail:name.detail, calc:quantity,
+      double:qtyFor(item, group.p * 2).main
     };
   }) : [];
-  return {plan, tabla};
+
+  const sections = [];
+  const own = extras.filter(o => !o.section);
+  if (own.length) sections.push({label:"De tu pauta", options:own});
+  const starts = SECCIONES[group.key] || [];
+  let current = null;
+  table.forEach(o => {
+    const start = starts.find(s => s[1] === o.label);
+    if (start || !current){
+      current = {label:start ? start[0] : "Tabla de intercambios", options:[]};
+      sections.push(current);
+    }
+    current.options.push(o);
+  });
+  extras.filter(o => o.section).forEach(o => {
+    let target = sections.find(s => s.label === o.section);
+    if (!target){ target = {label:o.section, options:[]}; sections.push(target); }
+    target.options.push(o);
+  });
+  return {sections, all:extras.concat(table)};
 }
 
-function optionHtml(opts){
-  return opts.map(o => '<option value="' + o.value + '">' + o.label + "</option>").join("");
+const optionCache = new WeakMap();
+function optionsFor(group){
+  if (!optionCache.has(group)) optionCache.set(group, buildOptions(group));
+  return optionCache.get(group);
 }
 
-function mealProgress(meal){
-  const mealState = state[meal.id] || {};
-  let selected = 0;
-  let required = 0;
-  meal.groups.forEach((group, gi) => {
-    const slots = group.selects || 1;
+function findOption(group, value){
+  return optionsFor(group).all.find(o => o.value === value) || null;
+}
+
+function portionsText(n){ return portionText(n) + (n === 1 ? " porción" : " porciones"); }
+function mealTime(m){ return m.time + (m.detail ? " · " + m.detail : ""); }
+function currentMeal(){ return MEALS.find(m => m.id === view); }
+function chosenValue(m, gi, s){ return ((state[m.id] || {})[gi] || [])[s]; }
+
+function mealProgress(m){
+  let selected = 0, required = 0;
+  m.groups.forEach((g, gi) => {
+    const slots = g.selects || 1;
     required += slots;
-    const values = mealState[gi] || [];
-    for (let s = 0; s < slots; s++) if (values[s]) selected++;
+    for (let s = 0; s < slots; s++){
+      const value = chosenValue(m, gi, s);
+      if (value && findOption(g, value)) selected++;
+    }
   });
   return {selected, required, complete:selected === required};
 }
 
-function renderDayProgress(){
-  const completed = MEALS.filter(m => mealProgress(m).complete).length;
-  const el = document.getElementById("dayProgress");
-  el.innerHTML = '<strong>' + completed + ' / ' + MEALS.length + '</strong>' +
-    '<span>comidas completas guardadas en este navegador</span>';
+function dayDone(){ return MEALS.filter(m => mealProgress(m).complete).length; }
+
+function mealItems(m){
+  const items = [], missing = [];
+  m.groups.forEach((g, gi) => {
+    const slots = g.selects || 1;
+    const chosen = [];
+    for (let s = 0; s < slots; s++){
+      const value = chosenValue(m, gi, s);
+      const opt = value ? findOption(g, value) : null;
+      if (opt) chosen.push(opt);
+    }
+    if (chosen.length < slots) missing.push(g.name);
+    if (g.mergeDuplicates && chosen.length === 2 && chosen[0].value === chosen[1].value){
+      items.push({group:g.name, label:chosen[0].label, qty:chosen[0].double || "2 × " + chosen[0].main});
+      return;
+    }
+    chosen.forEach(opt => items.push({group:g.name, label:opt.label, qty:opt.main}));
+  });
+  return {items, missing};
+}
+
+function selectOptionsHtml(sections){
+  const option = o => '<option value="' + o.value + '">' + o.label + '</option>';
+  if (sections.length === 1) return sections[0].options.map(option).join("");
+  return sections.map(s =>
+    '<optgroup label="' + s.label + '">' + s.options.map(option).join("") + '</optgroup>'
+  ).join("");
+}
+
+function calcTerm(value, label, isTotal){
+  return '<span class="calc-term' + (isTotal ? ' calc-total' : '') + '"><b>' + value + '</b><small>' + label + '</small></span>';
+}
+
+function amountHtml(opt){
+  let html = '<p class="amount-main">' + opt.main + '</p>';
+  if (opt.calc && opt.calc.p !== 1){
+    html += '<div class="calc">' +
+      calcTerm(portionText(opt.calc.p), "porciones") +
+      '<span class="calc-op">×</span>' +
+      calcTerm(opt.calc.base, "1 porción = " + opt.calc.per) +
+      '<span class="calc-op">=</span>' +
+      calcTerm(opt.calc.total, "en total", true) +
+    '</div>';
+  } else if (opt.calc){
+    html += '<p class="amount-note">Es 1 porción de la tabla.</p>';
+  }
+  if (opt.note) html += '<p class="amount-note">' + opt.note + '</p>';
+  if (opt.detail) html += '<p class="amount-note">Incluye: ' + opt.detail + '.</p>';
+  return html;
+}
+
+function progressHtml(done, total, text){
+  return '<div class="progress"><div class="progress-track"><div class="progress-fill" style="--done:' + (done / total) + '"></div></div>' +
+    '<span class="progress-label">' + done + ' de ' + total + ' ' + text + '</span></div>';
+}
+
+function itemsHtml(items){
+  return '<ul class="plate-list">' + items.map(it =>
+    '<li><span class="plate-group">' + it.group + '</span><span class="plate-food">' + it.label + '</span>' +
+    '<span class="plate-qty">' + it.qty + '</span></li>'
+  ).join("") + '</ul>';
+}
+
+function tabHtml(id, full, short, meta, complete, extraClass){
+  const active = view === id;
+  return '<button class="tab' + extraClass + (active ? ' active' : '') + (complete ? ' complete' : '') +
+    '" type="button" data-meal="' + id + '" aria-pressed="' + active + '">' +
+    '<span class="tab-name"><span class="full">' + full + '</span><span class="short">' + short + '</span></span>' +
+    '<span class="tab-meta">' + meta + '</span></button>';
 }
 
 function renderTabs(){
-  document.getElementById("tabs").innerHTML = MEALS.map((m, i) => {
+  const tabs = MEALS.map(m => {
     const p = mealProgress(m);
-    const classes = "tab" + (m.id === currentMeal ? " active" : "") + (p.complete ? " complete" : "");
-    return '<button class="' + classes + '" data-meal="' + m.id + '" aria-pressed="' + (m.id === currentMeal) + '">' +
-      '<span class="tab-index">0' + (i + 1) + '</span>' +
-      '<span class="tab-name">' + m.label + '</span>' +
-      '<small>' + m.time + '</small>' +
-      '<span class="tab-status">' + p.selected + '/' + p.required + '</span>' +
-    '</button>';
-  }).join("");
-  document.querySelectorAll(".tab").forEach(b =>
-    b.addEventListener("click", () => { currentMeal = b.dataset.meal; renderAll(); }));
-  renderDayProgress();
+    return tabHtml(m.id, m.label, m.short,
+      '<span class="tab-time">' + m.time + '</span><span class="tab-count">' + p.selected + '/' + p.required + '</span>',
+      p.complete, "");
+  });
+  const done = dayDone();
+  tabs.push(tabHtml("dia", "Tu día", "Día",
+    '<span class="tab-count">' + done + '/' + MEALS.length + '</span><span class="tab-time">comidas listas</span>',
+    done === MEALS.length, " tab-day"));
+  tabsEl.innerHTML = tabs.join("");
 }
 
-function renderMeal(){
-  const m = MEALS.find(x => x.id === currentMeal);
-  const mealNumber = String(MEALS.findIndex(x => x.id === m.id) + 1).padStart(2, "0");
+function renderMeal(m){
   if (!state[m.id]) state[m.id] = {};
-  let html = '<div class="meal-head">' +
-    '<div><span class="meal-kicker">Comida ' + mealNumber + '</span><h2 class="meal-title">' + m.label + '</h2></div>' +
-    '<span class="time">' + m.time + '</span>' +
-  '</div>' +
-  '<div class="formula-chips">' +
-    m.chips.map(c => '<span class="chip total">' + c + '</span>').join('') +
-  '</div>';
+  let html = '<div class="meal-head"><h2 class="meal-title">' + m.label + '</h2>' +
+    '<p class="meal-time">' + mealTime(m) + '</p></div>';
 
   m.groups.forEach((g, gi) => {
-    const opts = buildOptions(g);
-    const nSel = g.selects || 1;
-    const pTxt = g.selects ? "2 porciones" : P_STR[g.p] + (g.p === 1 ? " porción" : " porciones");
-    html += '<div class="group"><h3>' + g.name + ' <span class="pbadge">' + pTxt + "</span></h3>";
-    if (g.hint) html += '<p class="ghint">' + g.hint + "</p>";
-    for (let s = 0; s < nSel; s++){
-      const selId = "sel-" + m.id + "-" + gi + "-" + s;
-      const qtyId = "qty-" + m.id + "-" + gi + "-" + s;
-      const cur = (state[m.id][gi] || [])[s] || "";
-      if (nSel > 1) html += '<p class="sellabel">Porción ' + (s + 1) + " de 2</p>";
-      html += '<select id="' + selId + '" data-group="' + gi + '" data-slot="' + s + '" aria-label="' + g.name + ', opción ' + (s + 1) + '">';
-      html += '<option value="">Elige una opción...</option>';
-      if (opts.plan.length && opts.tabla.length){
-        html += '<optgroup label="Excepciones directas de la pauta">' + optionHtml(opts.plan) + "</optgroup>";
-        html += '<optgroup label="Intercambios exactos (porciones × equivalencia)">' + optionHtml(opts.tabla) + "</optgroup>";
-      } else {
-        html += optionHtml(opts.plan.concat(opts.tabla));
-      }
-      html += "</select>";
-      html += '<div class="qty" id="' + qtyId + '" aria-live="polite"><span class="none">La cantidad exacta aparecerá aquí.</span></div>';
+    const slots = g.selects || 1;
+    const sections = optionsFor(g).sections;
+    html += '<section class="group"><div class="group-head">' +
+      '<h3 class="group-name">' + g.name + '</h3>' +
+      '<p class="group-portions">' + portionsText(g.p * slots) + '</p>' +
+      (g.hint ? '<p class="group-hint">' + g.hint + '</p>' : '') +
+      '</div><div class="group-body">';
+    for (let s = 0; s < slots; s++){
+      if (slots > 1) html += '<p class="slot-label">Porción ' + (s + 1) + ' de ' + slots + '</p>';
+      html += '<select data-group="' + gi + '" data-slot="' + s + '" aria-label="' + g.name + (slots > 1 ? ', porción ' + (s + 1) : '') + '">' +
+        '<option value="">Elige un alimento</option>' + selectOptionsHtml(sections) + '</select>' +
+        '<div class="amount" id="amount-' + gi + '-' + s + '" aria-live="polite" hidden></div>';
     }
-    html += "</div>";
+    html += '</div></section>';
   });
 
-  if (m.free) html += '<div class="free">' + m.free + "</div>";
-  if (m.note) html += '<div class="note">' + m.note + "</div>";
-  document.getElementById("panel").innerHTML = html;
+  const notes = (m.free ? ['<p class="note note-free">' + m.free + '</p>'] : [])
+    .concat((m.notes || []).map(n => '<p class="note">' + n + '</p>'));
+  if (notes.length) html += '<div class="meal-notes">' + notes.join("") + '</div>';
+  panel.innerHTML = html;
 
-  document.querySelectorAll("#panel select").forEach(sel => {
-    const gi = sel.dataset.group, s = +sel.dataset.slot;
-    const cur = (state[m.id][gi] || [])[s];
-    if (cur) sel.value = cur;
-    updateQty(m, gi, s);
-    sel.addEventListener("change", () => {
-      if (!state[m.id][gi]) state[m.id][gi] = [];
-      state[m.id][gi][s] = sel.value;
-      save();
-      updateQty(m, gi, s);
-      renderTabs();
-      renderPlate();
-    });
+  panel.querySelectorAll("select").forEach(sel => {
+    const gi = +sel.dataset.group, s = +sel.dataset.slot;
+    const value = chosenValue(m, gi, s);
+    if (value) sel.value = value;
+    updateAmount(m, gi, s, false);
   });
 }
 
-function findOption(g, value){
-  const opts = buildOptions(g);
-  return opts.plan.concat(opts.tabla).find(o => o.value === value) || null;
-}
-
-function updateQty(meal, gi, s){
-  const el = document.getElementById("qty-" + meal.id + "-" + gi + "-" + s);
+function updateAmount(m, gi, s, animate){
+  const el = document.getElementById("amount-" + gi + "-" + s);
   if (!el) return;
-  const val = (state[meal.id][gi] || [])[s];
-  const opt = val ? findOption(meal.groups[gi], val) : null;
-  if (!opt){ el.innerHTML = '<span class="none">La cantidad exacta aparecerá aquí.</span>'; return; }
-  el.innerHTML = opt.main + (opt.sub ? '<div class="qtysub">' + opt.sub + "</div>" : "");
+  const value = chosenValue(m, gi, s);
+  const opt = value ? findOption(m.groups[gi], value) : null;
+  el.hidden = !opt;
+  el.innerHTML = opt ? amountHtml(opt) : "";
+  if (opt && animate){
+    el.classList.remove("is-new");
+    void el.offsetWidth;
+    el.classList.add("is-new");
+  }
 }
 
-function renderPlate(){
-  const m = MEALS.find(x => x.id === currentMeal);
-  const progress = mealProgress(m);
-  let items = [];
-  m.groups.forEach((g, gi) => {
-    const values = ((state[m.id] || {})[gi] || []).filter(Boolean);
-    if (g.mergeDuplicates && values.length === 2 && values[0] === values[1]){
-      const opt = findOption(g, values[0]);
-      if (opt) items.push({
-        group:g.name,
-        label:opt.label,
-        qty:opt.double || ("2 × " + opt.main)
-      });
-      return;
-    }
-    values.forEach(v => {
-      const opt = v ? findOption(g, v) : null;
-      if (opt) items.push({group:g.name, label:opt.label, qty:opt.main});
-    });
-  });
-  const percent = Math.round((progress.selected / progress.required) * 100);
-  let html = '<div class="receipt-inner">' +
-    '<span class="receipt-kicker">Resumen de la elección</span>' +
-    '<h2>Tu ' + m.label.toLowerCase() + '</h2>' +
-    '<p class="pm">' + m.time + '</p>' +
-    '<div class="receipt-progress"><div class="progress-track"><div class="progress-fill" style="width:' + percent + '%"></div></div>' +
-    '<span class="progress-label">' + progress.selected + '/' + progress.required + '</span></div>';
-  if (!items.length){
-    html += '<p class="empty">Elige una opción en cada bloque. Este resumen te mostrará el plato completo y las cantidades que debes servir.</p>';
-  } else {
-    html += "<ul>" + items.map(it =>
-      "<li><b>" + it.group + "</b>" + it.label + "<br><strong>" + it.qty + "</strong></li>").join("") + "</ul>";
-  }
-  if (m.free) html += '<p class="pm" style="margin-top:10px;">+ ' + m.free + "</p>";
-  if (progress.complete) html += '<p class="complete-message">Comida completa. Elegiste todo lo que pide este horario.</p>';
-  html += '<div class="btnrow">' +
-    '<button class="act primary" id="copyBtn">Copiar comida</button>' +
-    '<button class="act" id="clearBtn">Empezar de nuevo</button></div></div>';
-  document.getElementById("plate").innerHTML = html;
+function renderPlate(m){
+  const items = mealItems(m).items;
+  const p = mealProgress(m);
+  let html = '<h2 class="plate-title">Tu plato</h2>' +
+    '<p class="plate-time">' + m.label + ' · ' + mealTime(m) + '</p>' +
+    progressHtml(p.selected, p.required, "elegidos");
+  html += items.length ? itemsHtml(items)
+    : '<p class="plate-empty">Elige un alimento en cada grupo y acá vas a ver tu plato completo, con sus cantidades.</p>';
+  if (m.free) html += '<p class="plate-free">+ ' + m.free + '</p>';
+  if (p.complete) html += '<p class="plate-done">Comida completa.</p>';
+  html += '<div class="actions">' +
+    '<button class="btn btn-primary" type="button" data-copy="meal">Copiar comida</button>' +
+    '<button class="btn" type="button" data-clear>Empezar de nuevo</button></div>';
+  plate.innerHTML = html;
+}
 
-  document.getElementById("clearBtn").addEventListener("click", () => {
-    state[m.id] = {};
-    save();
-    renderTabs();
-    renderMeal();
-    renderPlate();
+function dayMealHtml(m){
+  const {items, missing} = mealItems(m);
+  const p = mealProgress(m);
+  let html = '<section class="day-meal"><div class="day-meal-head">' +
+    '<h3><button class="day-meal-link" type="button" data-meal="' + m.id + '">' + m.label + '</button></h3>' +
+    '<span class="day-meal-count' + (p.complete ? ' is-complete' : '') + '">' + p.selected + '/' + p.required + '</span></div>' +
+    '<p class="day-meal-time">' + mealTime(m) + '</p>' +
+    '<p class="day-formula">' + m.chips.join(" · ") + '</p>';
+  if (!items.length) html += '<p class="day-missing">Todavía no eliges nada.</p>';
+  else {
+    html += itemsHtml(items);
+    if (missing.length) html += '<p class="day-missing">Falta elegir: ' + missing.join(", ") + '.</p>';
+  }
+  return html + '</section>';
+}
+
+function targetsHtml(){
+  const rows = Object.keys(GROUP_LABELS).map(key => {
+    const parts = [];
+    let total = 0;
+    MEALS.forEach(m => m.groups.forEach(g => {
+      if (g.key !== key) return;
+      const p = g.p * (g.selects || 1);
+      total += p;
+      parts.push(portionText(p) + " " + m.short.toLowerCase());
+    }));
+    return '<li><span class="target-name">' + GROUP_LABELS[key] + '</span>' +
+      '<span class="target-sum">' + parts.join(" + ") + '</span>' +
+      '<span class="target-total">' + portionText(total) + 'p</span></li>';
   });
-  document.getElementById("copyBtn").addEventListener("click", () => {
-    let txt = m.label.toUpperCase() + " (" + m.time + ")\n";
-    items.forEach(it => { txt += "• " + it.group + ": " + it.label + ". " + it.qty + "\n"; });
-    if (m.free) txt += "• " + m.free + "\n";
-    const btn = document.getElementById("copyBtn");
-    copyText(txt).then(() => {
-      btn.textContent = "¡Copiado!";
-      setTimeout(() => { btn.textContent = "Copiar comida"; }, 1500);
-    }).catch(() => { btn.textContent = "No se pudo copiar"; });
-  });
+  return '<section class="targets"><h3>Cómo se reparte la meta del día</h3><ul>' + rows.join("") + '</ul>' +
+    '<p class="targets-note">Si algún día un horario no te acomoda, tu pauta permite mover porciones entre comidas. Lo importante es que al final del día sumen lo mismo.</p></section>';
+}
+
+function renderDay(){
+  const done = dayDone();
+  panel.innerHTML = '<div class="day-head"><div><h2 class="meal-title">Tu día</h2>' +
+      '<p class="meal-time">' + done + ' de ' + MEALS.length + ' comidas listas</p></div>' +
+      '<button class="btn btn-primary" type="button" data-copy="day">Copiar día</button></div>' +
+    '<div class="day-grid">' + MEALS.map(dayMealHtml).join("") + '</div>' +
+    targetsHtml();
+}
+
+function renderBar(){
+  const info = (title, text) =>
+    '<div class="bar-info"><p class="bar-title">' + title + '</p><p class="bar-count">' + text + '</p></div>';
+  if (view === "dia"){
+    bar.innerHTML = info("Tu día", dayDone() + " de " + MEALS.length + " comidas listas") +
+      '<button class="btn btn-primary" type="button" data-copy="day">Copiar día</button>';
+    return;
+  }
+  const m = currentMeal(), p = mealProgress(m);
+  bar.innerHTML = info(m.label, p.selected + " de " + p.required + " elegidos") +
+    '<button class="btn btn-primary" type="button" data-copy="meal">Copiar comida</button>';
+}
+
+function renderAll(){
+  renderTabs();
+  const isDay = view === "dia";
+  layout.classList.toggle("is-day", isDay);
+  plate.hidden = isDay;
+  if (isDay) renderDay();
+  else {
+    renderMeal(currentMeal());
+    renderPlate(currentMeal());
+  }
+  renderBar();
+}
+
+function mealText(m){
+  const {items, missing} = mealItems(m);
+  let txt = m.label.toUpperCase() + " (" + mealTime(m) + ")\n";
+  items.forEach(it => { txt += "• " + it.group + ": " + it.label + ". " + it.qty + "\n"; });
+  if (missing.length) txt += "• Falta elegir: " + missing.join(", ") + "\n";
+  if (m.free) txt += "• " + m.free + "\n";
+  return txt;
+}
+
+function dayText(){
+  const date = new Intl.DateTimeFormat("es-CL", {weekday:"long", day:"numeric", month:"long"}).format(new Date());
+  return "MI DÍA · " + date + "\n\n" + MEALS.map(mealText).join("\n");
 }
 
 function copyText(text){
@@ -1927,7 +1544,54 @@ function copyText(text){
   });
 }
 
-function renderAll(){ renderTabs(); renderMeal(); renderPlate(); }
+function flash(btn, promise){
+  const label = btn.textContent;
+  promise
+    .then(() => { btn.textContent = "Copiado"; })
+    .catch(() => { btn.textContent = "No se pudo copiar"; })
+    .finally(() => { setTimeout(() => { btn.textContent = label; }, 1500); });
+}
+
+function revealPanel(){
+  if (layout.getBoundingClientRect().top < 0) layout.scrollIntoView({block:"start"});
+}
+
+document.addEventListener("click", event => {
+  const nav = event.target.closest("[data-meal]");
+  if (nav){
+    view = nav.dataset.meal;
+    renderAll();
+    revealPanel();
+    tabsEl.querySelector('[data-meal="' + view + '"]').focus({preventScroll:true});
+    return;
+  }
+  const copy = event.target.closest("[data-copy]");
+  if (copy){
+    flash(copy, copyText(copy.dataset.copy === "day" ? dayText() : mealText(currentMeal())));
+    return;
+  }
+  if (event.target.closest("[data-clear]")){
+    state[view] = {};
+    save();
+    renderAll();
+  }
+});
+
+panel.addEventListener("change", event => {
+  const sel = event.target.closest("select");
+  if (!sel) return;
+  const m = currentMeal();
+  const gi = +sel.dataset.group, s = +sel.dataset.slot;
+  if (!state[m.id]) state[m.id] = {};
+  if (!state[m.id][gi]) state[m.id][gi] = [];
+  state[m.id][gi][s] = sel.value;
+  save();
+  updateAmount(m, gi, s, true);
+  renderTabs();
+  renderPlate(m);
+  renderBar();
+});
+
 renderAll();
 </script>
 </body>

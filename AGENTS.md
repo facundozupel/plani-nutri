@@ -32,7 +32,10 @@ No hay servidor, ni `npm`, ni tests. El estado de las elecciones se guarda en
   porciones corresponden a ese grupo en ese horario).
 - `EXTRAS_*` / `REEMPLAZOS_*` — opciones que la pauta permite pero que **no tienen
   equivalencia en gramos** en la tabla (Salmas, compota, proteína en polvo, mantequilla
-  de maní). Van aparte, con su `sub` explicando por qué.
+  de maní). Van aparte, con su `sub` explicando por qué. Con `section` se muestran en un
+  grupo propio del desplegable (por ejemplo, los reemplazos de la fruta en la colación).
+- `SECCIONES` — cómo se agrupa cada desplegable. Cada sección parte en el alimento
+  indicado de `MASTER` y sigue hasta la próxima, así que el orden de `MASTER` importa.
 - `carnesFuertes()` / `panesFuertes()` / `aceitesBase()` — fábricas de los grupos que se
   repiten idénticos en almuerzo y cena. Si cambian las porciones de almuerzo o cena,
   se tocan acá una sola vez.
@@ -58,8 +61,8 @@ No hay servidor, ni `npm`, ni tests. El estado de las elecciones se guarda en
 - **Un solo archivo.** No separar en `.css` / `.js` ni agregar dependencias: la gracia es
   que el HTML se abra desde cualquier lado, incluso sin internet.
 - JS plano, `const`/`let`, sin frameworks ni build step.
-- Colores y radios salen de las variables CSS en `:root` (`--forest`, `--tomato`,
-  `--mustard`, `--paper`…). No hardcodear hex nuevos.
+- Colores y radios salen de las variables CSS en `:root` (`--countertop`, `--plate`,
+  `--ink`, `--herb`, `--measure`…). No hardcodear hex nuevos.
 - Todo el texto visible va en **castellano de Chile**, en el tono de la pauta: frases
   cortas, sin jerga técnica y sin voz de asistente.
 - Números formateados con `Intl.NumberFormat("es-CL")` — coma decimal, punto de miles.
@@ -68,7 +71,8 @@ No hay servidor, ni `npm`, ni tests. El estado de las elecciones se guarda en
 ## Al modificar
 
 - Si agregás un alimento, agregalo a `MASTER` con su gramaje de 1 porción; todos los
-  horarios lo heredan solos.
+  horarios lo heredan solos. Ubicalo dentro de su sección: el orden define en qué grupo
+  del desplegable aparece.
 - Si agregás una opción sin gramaje, va a un `EXTRAS_*` con `sub` explicando la excepción.
 - Después de tocar el script: abrir la página, recorrer las 4 comidas, verificar que el
-  progreso del día llegue a 4/4 y que "Copiar comida" arme el texto completo.
+  progreso del día llegue a 4/4 y que "Copiar comida" y "Copiar día" armen el texto completo.
