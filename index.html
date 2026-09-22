@@ -873,7 +873,7 @@
     <div class="audit-body">
       <p><strong>Regla aplicada.</strong> La tabla de intercambios es la fuente matemática. La herramienta toma el valor de 1 porción y lo multiplica por las porciones asignadas a cada horario.</p>
       <p><strong>Resultados que cambian.</strong> El pescado en almuerzo o cena queda en 320 g. Para huevo, 1 porción son 2 unidades: el desayuno de 1½ porciones equivale a 3 huevos y una comida de 4 porciones equivale a 8 huevos. El arroz blanco cocido queda en 195 g y el pan pita de la cena en 90 g.</p>
-      <p><strong>Unidades y medidas caseras.</strong> También se multiplica la medida de la tabla por las porciones del horario. Por ejemplo, 75 g son 2 huevos en la tabla: 1 huevo equivale a 37,5 g y 112,5 g equivalen a 3 huevos. El peso de cada unidad puede variar; usa una balanza para ajustar los gramos. Cuando la tabla solo da tazas, cucharadas o una referencia de mano, se muestra esa medida sin inventar unidades.</p>
+      <p><strong>Unidades y medidas caseras.</strong> También se multiplica la medida de la tabla por las porciones del horario. Por ejemplo, 75 g son 2 huevos en la tabla: 1 huevo equivale a 37,5 g y 112,5 g equivalen a 3 huevos. El peso de cada unidad puede variar; usa una balanza para ajustar los gramos. Cuando la tabla solo da tazas o cucharadas, se muestra esa medida sin inventar unidades. La referencia de la mano (palma o mano abierta) vale para 1 porción, así que no se multiplica: con más porciones se muestran solo los gramos.</p>
       <p><strong>Alcance de los grupos.</strong> Cuando un horario pide "Carnes bajas en grasa", el desplegable muestra los alimentos que el PDF ubica dentro de ese grupo, incluido el huevo. La herramienta no elimina alimentos del grupo por criterio propio.</p>
       <p><strong>Aceite de cocción.</strong> El PDF dice que para cocinar está considerada 1 cdta de aceite, pero no aclara si reemplaza o se suma a la grasa elegida. El armador no agrega una segunda cucharadita automáticamente. Confirma ese punto con Constanza antes de contarla aparte.</p>
     </div>
@@ -1175,7 +1175,6 @@ const MEASURE_WORDS = [
   ["unidad", "unidades"], ["rebanada", "rebanadas"],
   ["tortilla", "tortillas"], ["taza", "tazas"],
   ["cucharada", "cucharadas"], ["cucharadita", "cucharaditas"],
-  ["palma", "palmas"], ["mano", "manos"], ["abierta", "abiertas"],
   ["mariposa", "mariposas"], ["envase", "envases"], ["cajita", "cajitas"],
   ["chica", "chicas"], ["chico", "chicos"], ["grande", "grandes"],
   ["regular", "regulares"], ["mediana", "medianas"], ["huevo", "huevos"]
@@ -1194,8 +1193,6 @@ function measureFor(item, p){
       const forms = MEASURE_WORDS.find(pair => pair.includes(word));
       return forms ? forms[total > 1 ? 1 : 0] : word;
     }).join(" ");
-    // «Palmas de mano» conserva el nombre de la referencia anatómica.
-    words = words.replace("de manos", "de mano");
     return portionText(total) + " " + words;
   }).join(" o ");
 }
@@ -1203,8 +1200,10 @@ function measureFor(item, p){
 function qtyFor(item, p){
   const g = item[1], u = item[2];
   const total = formatNumber(g * p) + " " + u;
+  // La referencia de la mano vale por porción: al multiplicarla se muestran solo los gramos.
+  const byHand = /\bmano\b/.test(item[3]);
   return {
-    main: measureFor(item, p) + " · " + total,
+    main: byHand && p !== 1 ? total : measureFor(item, p) + " · " + total,
     p,
     base: formatNumber(g) + " " + u,
     per: measureFor(item, 1),
