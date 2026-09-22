@@ -1419,6 +1419,7 @@
     <div class="audit-body">
       <p><strong>Regla aplicada.</strong> La tabla de intercambios es la fuente matemática. La herramienta toma el valor de 1 porción y lo multiplica por las porciones asignadas a cada horario.</p>
       <p><strong>Resultados que cambian.</strong> El pescado en almuerzo o cena queda en 320 g. En desayuno, 1½ porciones de huevo son 112,5 g, equivalentes a 3 huevos. El arroz blanco cocido queda en 195 g y el pan pita de la cena en 90 g.</p>
+      <p><strong>Unidades y medidas caseras.</strong> También se multiplica la medida de la tabla por las porciones del horario. Por ejemplo, 75 g son 2 huevos en la tabla: 1 huevo equivale a 37,5 g y 112,5 g equivalen a 3 huevos. El peso de cada unidad puede variar; usa una balanza para ajustar los gramos. Cuando la tabla solo da tazas, cucharadas o una referencia de mano, se muestra esa medida sin inventar unidades.</p>
       <p><strong>Todos los intercambios.</strong> Los desplegables incluyen los alimentos de la tabla general que no están marcados para evitar. Las opciones adicionales de la pauta, como Salmas, compota o proteína en polvo, aparecen aparte porque el PDF no siempre informa su equivalencia en gramos.</p>
       <p><strong>Aceite de cocción.</strong> El PDF dice que para cocinar está considerada 1 cdta de aceite, pero no aclara si reemplaza o se suma a la grasa elegida. El armador no agrega una segunda cucharadita automáticamente. Confirma ese punto con Constanza antes de contarla aparte.</p>
     </div>
@@ -1533,7 +1534,7 @@ const MASTER = {
     ["Palta",30,"g","2 cucharadas o ¼ de unidad"],
     ["Almendras",6,"g","6 unidades"],
     ["Maní sin sal",8,"g","8 unidades"],
-    ["Nueces",7.5,"g","3 mariposas"],
+    ["Nueces",7.5,"g","1½ unidades o 3 mariposas"],
     ["Aceitunas sin cuesco",30,"g","7 unidades"],
     ["Pistachos",8,"g","10 unidades"],
     ["Castañas de cajú",7.5,"g","3 unidades"],
@@ -1551,7 +1552,7 @@ const MASTER = {
 };
 
 /* ============ CONFIGURACIÓN DE LAS 4 COMIDAS — del PDF del plan ============ */
-const P_STR = {0.5:"½", 1:"1", 1.5:"1½", 2:"2", 4:"4"};
+const P_STR = {0.125:"⅛", 0.25:"¼", 0.375:"⅜", 0.5:"½", 0.625:"⅝", 0.75:"¾", 0.875:"⅞", 1:"1", 1.5:"1½", 2:"2", 4:"4"};
 
 /* La tabla de intercambio es la fuente matemática. Cada alimento se multiplica
    por las porciones asignadas al horario. Las opciones sin equivalencia en la
@@ -1657,23 +1658,61 @@ function formatNumber(value){
 }
 
 function portionText(value){
-  return P_STR[value] || formatNumber(value);
+  if (P_STR[value]) return P_STR[value];
+  const whole = Math.floor(value);
+  const fraction = value - whole;
+  const glyph = Object.entries(P_STR).find(([n]) => +n < 1 && Math.abs(+n - fraction) < 1e-9);
+  if (glyph) return (whole || "") + glyph[1];
+  for (const [n, symbol] of [[1/3, "⅓"], [2/3, "⅔"]]){
+    if (Math.abs(fraction - n) < 1e-9) return (whole || "") + symbol;
+  }
+  return formatNumber(value);
+}
+
+/* Multiplica solo la cantidad inicial de cada medida, nunca el tamaño del envase.
+   Conserva las alternativas de la tabla: tazas o cucharadas, unidades o mariposas. */
+const MEASURE_FRACTIONS = {"¼":1/4, "½":1/2, "¾":3/4, "⅓":1/3};
+const MEASURE_WORDS = [
+  ["unidad", "unidades"], ["rebanada", "rebanadas"],
+  ["tortilla", "tortillas"], ["taza", "tazas"],
+  ["cucharada", "cucharadas"], ["cucharadita", "cucharaditas"],
+  ["palma", "palmas"], ["mano", "manos"], ["abierta", "abiertas"],
+  ["mariposa", "mariposas"], ["envase", "envases"], ["cajita", "cajitas"],
+  ["chica", "chicas"], ["chico", "chicos"], ["grande", "grandes"],
+  ["regular", "regulares"], ["mediana", "medianas"], ["huevo", "huevos"]
+];
+
+function measureFor(item, p){
+  return item[3].split(" o ").map(measure => {
+    const match = measure.match(/^(\d+)?([¼½¾⅓])?\s+(.+)$/);
+    if (!match) return p === 1 ? measure : portionText(p) + " × " + measure;
+    const count = (Number(match[1]) || 0) + (MEASURE_FRACTIONS[match[2]] || 0);
+    const total = count * p;
+    let words = match[3];
+    if (item[0] === "Huevo entero") words = "huevos";
+    // Una fracción de unidad usa singular; las cantidades mayores a uno, plural.
+    words = words.split(" ").map(word => {
+      const forms = MEASURE_WORDS.find(pair => pair.includes(word));
+      return forms ? forms[total > 1 ? 1 : 0] : word;
+    }).join(" ");
+    // «Palmas de mano» conserva el nombre de la referencia anatómica.
+    words = words.replace("de manos", "de mano");
+    return portionText(total) + " " + words;
+  }).join(" o ");
 }
 
 function qtyFor(item, p){
-  const g = item[1], u = item[2], m = item[3];
-  const total = g * p;
-  const totalText = formatNumber(total) + " " + u;
+  const g = item[1], u = item[2];
+  const totalText = formatNumber(g * p) + " " + u;
   const baseText = formatNumber(g) + " " + u;
-  if (p === 1) {
-    return {
-      main: totalText + " · " + m,
-      sub: "1 porción exacta = " + baseText + "."
-    };
-  }
+  const measure = measureFor(item, p);
+  const eggReference = item[0] === "Huevo entero"
+    ? " Según esta equivalencia, 1 huevo = 37,5 g." : "";
   return {
-    main: totalText,
-    sub: "Cálculo exacto: " + portionText(p) + " × " + baseText + " = " + totalText + ". Medida de 1 porción: " + m + "."
+    main: measure + " · " + totalText,
+    sub: "Tabla: " + measureFor(item, 1) + " = " + baseText + " por porción. " +
+      portionText(p) + (p === 1 ? " porción" : " porciones") + " = " + totalText + "." + eggReference +
+      " La medida casera es una referencia; para ajustar el peso, usa una balanza."
   };
 }
 
@@ -1693,7 +1732,7 @@ function buildOptions(group){
       label:item[0],
       main:quantity.main,
       sub:quantity.sub,
-      double:doubled.main + " · 2 × " + item[3]
+      double:doubled.main
     };
   }) : [];
   return {plan, tabla};
